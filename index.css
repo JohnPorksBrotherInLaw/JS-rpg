@@ -1,0 +1,28 @@
+body {
+  /* Allow canvas to hit the edges of the browser viewport. */
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+#game-title {
+  color: white;
+  font-size: 3rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+#screen canvas {
+  margin: auto;
+  border: 2px solid white;
+  /* Hide the gap for font descenders. */
+  display: block;
+}
+#bottom-text {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
