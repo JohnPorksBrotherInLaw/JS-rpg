@@ -41,9 +41,6 @@ function updateJoystickOutput(clientX, clientY) {
     const handleX = distance * Math.cos(angle);
     const handleY = distance * Math.sin(angle);
     joystickHandle.style.transform = `translate(${handleX}px, ${handleY}px)`;
-            
-    // You can use these values to control your game
-    console.log(joystickOutput);
 }
         
 function resetJoystick() {
@@ -54,8 +51,7 @@ function resetJoystick() {
 }
         
 // Touch events
-joystickContainer.addEventListener('touchstart', (e) => {
-    console.log("touch");
+joystickContainer.addEventListener('touchstart', (e) => {   
     if (activeTouchId === null) {
         const touch = e.touches[0];
         activeTouchId = touch.identifier;
@@ -64,8 +60,7 @@ joystickContainer.addEventListener('touchstart', (e) => {
     }
 },{passive : false});
         
-joystickContainer.addEventListener('touchmove', (e) => {
-    console.log("touch1");
+joystickContainer.addEventListener('touchmove', (e) => {    
     for (let i = 0; i < e.touches.length; i++) {
         const touch = e.touches[i];
         if (touch.identifier === activeTouchId) {
@@ -76,8 +71,7 @@ joystickContainer.addEventListener('touchmove', (e) => {
     }
 },{passive : false});
         
-joystickContainer.addEventListener('touchend', (e) => {
-    console.log("touch2");
+joystickContainer.addEventListener('touchend', (e) => {    
     for (let i = 0; i < e.changedTouches.length; i++) {
         const touch = e.changedTouches[i];
         if (touch.identifier === activeTouchId) {
@@ -100,7 +94,7 @@ if (isTouchDevice()) {
 }
 
 // a player entity
-class PlayerEntity extends me.Sprite {
+export class PlayerEntity extends me.Sprite {
 
     constructor(x, y, settings) {
         // call the constructor
@@ -113,7 +107,9 @@ class PlayerEntity extends me.Sprite {
         );
 
         // add a physic body with a diamond as a body shape
-        this.body = new me.Body(this, (new me.Rect(16, 16, 16, 16)).toIso());
+       
+        this.body = new me.Body(this, (new me.Rect(16, 16, 16, 16)));
+        this.body.gravityScale = 0;
         // walking & jumping speed
         this.body.setMaxVelocity(2.5, 2.5);
         this.body.setFriction(0.4,0.4);
@@ -128,6 +124,8 @@ class PlayerEntity extends me.Sprite {
             me.input.bindKey(me.input.KEY.RIGHT, "right");
             me.input.bindKey(me.input.KEY.UP,    "up");
             me.input.bindKey(me.input.KEY.DOWN,  "down");
+            me.input.bindKey(me.input.KEY.Z, "accept");
+            me.input.bindKey(me.input.KEY.Z, "decline");
         }
         // define an additional basic walking animation
         this.addAnimation("walk_left",  [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]);
@@ -216,5 +214,32 @@ class PlayerEntity extends me.Sprite {
     }
 };
 
-export default PlayerEntity;
-
+//things you can interact and talk to like in rpgmaker
+export class NPCEntity extends me.Sprite{
+    constructor(x,y,settings){
+         // call the constructor
+        super(x, y,
+            Object.assign({
+                image: "npc0",
+                framewidth: 32,
+                frameheight: 32,
+                interactradius: 64,
+                player: null,
+            }, settings)
+        );
+        this.body = new me.Body(this, (new me.Rect(16, 16, 16, 16)));
+        this.body.gravityScale = 0;
+    }
+    update(dt){
+        //see if the character is close enough to interact
+        if(this.player != null){
+        let newx = player.x - x;
+        let newy = player.y - y;
+        if(Math.sqrt(newx * newx + newy * newy) < interactradius){
+            if(me.input.isKeyPressed("accept")){
+                console.log("Hello World");
+            }
+        }        
+    }
+}
+}

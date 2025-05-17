@@ -5,6 +5,7 @@ var resources = [
      * { name: "example", type:"image", src: "data/img/example.png" },
      */
     { name: "testTileMap",  type:"image", src: "data/img/testTileMap.png" },  
+    { name: "npc0",  type:"image", src: "data/img/npc0.png" },  
     { name: "Blank_Sprite_Sheet", type:"image", src: "data/img/Blank_Sprite_Sheet_4_2_by_KnightYamato.png" },
 
     /* Maps.
