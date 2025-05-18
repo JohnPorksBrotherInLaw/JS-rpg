@@ -27,8 +27,9 @@ var resources = [
 
     /* Atlases
      * @example
-     * { name: "example_tps", type: "json", src: "data/img/example_tps.json" },
+     *{ name: "example_tps", type: "json", src: "data/img/example_tps.json" },
      */
+    {name:"testMap-npc0",type:"json", src:"data/npc/testMap-npc0.json"},
 
 ];
 

@@ -1,5 +1,7 @@
 import * as me from 'melonjs';
+import game from '../game.js';
 //MOBILE CONTROLS FOR USE IN PLAYERENTITY
+//I THINK POINTER EVENTS INCLUDE TOUCHSCREEN NOW THAT I THINK ABT IT
 // Detect touch device and show controls if needed
 function isTouchDevice() {
     return (('ontouchstart' in window) ||
@@ -68,14 +70,19 @@ function resetJoystick() {
 function acceptButtonPress(TX,TY){
     if(TX >= acceptButtonRect.left && TX < acceptButtonRect.left + acceptButtonRect.width){
         if(TY >= acceptButtonRect.top && TY < acceptButtonRect.top + acceptButtonRect.height){
+            
             acceptPressed = true;
+            acceptButton.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
+            acceptButton.style.border = "2px solid rgba(255, 255, 255, 0.8)";    
         }
     }
 }
 function declineButtonPress(TX,TY){
     if(TX >= declineButtonRect.left && TX < declineButtonRect.left + declineButtonRect.width){
-        if(TY >= declineButtonRect.top && TY < declineButtonRect.top + declineButtonRect.height){
+        if(TY >= declineButtonRect.top && TY < declineButtonRect.top + declineButtonRect.height){            
             declinePressed = true;
+            declineButton.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
+            declineButton.style.border = "2px solid rgba(255, 255, 255, 0.8)";   
         }
     }
 }
@@ -134,6 +141,8 @@ acceptButton.addEventListener('touchend', (e) => {
         const touch = e.changedTouches[i];
         if (touch.identifier === activeTouchId) {
             acceptPressed = false;
+            acceptButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+            acceptButton.style.border = "2px solid rgba(255, 255, 255, 0.5)";            
             activeTouchId = null;
             e.preventDefault();
             break;
@@ -145,6 +154,8 @@ declineButton.addEventListener('touchend', (e) => {
         const touch = e.changedTouches[i];
         if (touch.identifier === activeTouchId) {
             declinePressed = false;
+            declineButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+            declineButton.style.border = "2px solid rgba(255, 255, 255, 0.5)";   
             activeTouchId = null;
             e.preventDefault();
             break;
@@ -208,8 +219,7 @@ export class PlayerEntity extends me.Sprite {
     /**
      * update the player pos
      */
-    update(dt) {
-        
+    update(dt) {        
         if(!isTouchDevice()){            
             if (me.input.isKeyPressed("left")) {
                 // update the entity velocity
@@ -241,8 +251,7 @@ export class PlayerEntity extends me.Sprite {
             } else {
                 this.body.force.y = 0;
             }
-        }else{
-            
+        }else{            
             if((joystickOutput.x != 0 && joystickOutput.y != 0)){                
                 this.body.force.x = joystickOutput.x * this.body.maxVel.x;
                 this.body.force.y = joystickOutput.y * this.body.maxVel.y;
@@ -280,34 +289,38 @@ export class PlayerEntity extends me.Sprite {
         // Make all other objects solid
         return true;
     }
-};
+}
 
 //things you can interact and talk to like in rpgmaker
 export class NPCEntity extends me.Sprite{
+    
     constructor(x,y,settings){
          // call the constructor
         super(x, y,
             Object.assign({
                 image: "npc0",
                 framewidth: 32,
-                frameheight: 32,
-                interactradius: 64,
-                player: null,
+                frameheight: 32,                                          
             }, settings)
-        );
+        );                 
         this.body = new me.Body(this, (new me.Rect(16, 16, 16, 16)));
         this.body.gravityScale = 0;
     }
+    
     update(dt){
         //see if the character is close enough to interact
-        if(this.player != null){
-        let newx = player.x - x;
-        let newy = player.y - y;
-        if(Math.sqrt(newx * newx + newy * newy) < interactradius){
-            if((isTouchDevice() && acceptPressed) || me.input.isKeyPressed("accept")){
-                console.log("Hello World");
-            }
-        }        
+        
+        if(game.player != null){
+            console.log('this.player)');
+            let newx = this.player.x - this.x;
+            let newy = this.player.y - this.y;
+            if(Math.sqrt(newx * newx + newy * newy) < this.interactradius){
+                
+                if((isTouchDevice() && acceptPressed) || me.input.isKeyPressed("accept")){
+                    
+                }
+            }        
+        }
+        super.update(dt);
     }
-}
 }

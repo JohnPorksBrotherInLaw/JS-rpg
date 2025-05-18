@@ -1,0 +1,14 @@
+{
+    "name" : "Spooki",
+    "dialogue" : [
+        [
+            "Hello there. My name is Spooki. Nice to meet you.",
+            "Spooki"
+        ],
+        "It's nice weather today, isn't it?",
+        [
+            "It sure is! Have a nice day!",
+            "MC"
+        ]
+    ]    
+}
