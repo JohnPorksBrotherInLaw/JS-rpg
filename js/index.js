@@ -16,8 +16,7 @@ export default function onload () {
     // set all ressources to be loaded
     me.loader.preload(resources, () => {
         // set the "Play/Ingame" Screen Object
-        me.pool.register("mainPlayer", PlayerEntity);    
-        me.pool.register("npc0", NPCEntity);   
+          
         me.level.load("testMap");
         //me.state.set(me.state.PLAY, new PlayScreen());
 
@@ -25,7 +24,8 @@ export default function onload () {
         me.state.transition("fade","#FFFFFF", 250);
 
         // register our objects entity in the object pool
-        
+        me.pool.register("mainPlayer", PlayerEntity);    
+        me.pool.register("npc0", NPCEntity); 
         //me.state.change(me.state.PLAY);         
     });
     //init npcs

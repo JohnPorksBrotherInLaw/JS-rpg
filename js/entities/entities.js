@@ -1,18 +1,31 @@
 import * as me from 'melonjs';
+//MOBILE CONTROLS FOR USE IN PLAYERENTITY
+// Detect touch device and show controls if needed
+function isTouchDevice() {
+    return (('ontouchstart' in window) ||
+        navigator.maxTouchPoints > 0) ||
+        (navigator.msMaxTouchPoints > 0);
+}
 
 //the joystick on the screen for mobile
-const joystickContainer = document.getElementById('joystick-container');
+const DocBody = document.querySelector('body');
+const MobileScreenControlsContainer = document.getElementById('mobile-screen-controls-container');
 const joystickHandle = document.getElementById('joystick-handle');
-const joystickBase = document.getElementById('joystick-base');
-        
-const baseRect = joystickBase.getBoundingClientRect();
-const baseSize = baseRect.width;
-const centerX = baseRect.left + baseSize / 2;
-const centerY = baseRect.top + baseSize / 2;
-const maxDistance = baseSize / 3;
+const joystickBase = document.getElementById('joystick-base');        
+let joystickbaseRect = joystickBase.getBoundingClientRect();
+let joystickcenterX = joystickbaseRect.left + joystickbaseRect.width / 2;
+let joystickcenterY = joystickbaseRect.top + joystickbaseRect.width / 2;
+let joystickmaxDistance = joystickbaseRect.width / 3;
+
+const acceptButton = document.getElementById('accept-button');
+let acceptButtonRect = acceptButton.getBoundingClientRect();
+let acceptPressed = false;
+const declineButton = document.getElementById('decline-button');
+let declineButtonRect = declineButton.getBoundingClientRect();
+let declinePressed = false;
         
 let activeTouchId = null;
-        
+MobileScreenControlsContainer.style.display = 'block';        
     // Output values
 const joystickOutput = {
     x: 0,
@@ -20,13 +33,15 @@ const joystickOutput = {
     angle: 0,//used to determine what animation
 };
         
-function updateJoystickOutput(clientX, clientY) {
-    const dx = clientX - centerX;
-    const dy = clientY - centerY;
-    const distance = Math.min(Math.sqrt(dx * dx + dy * dy), maxDistance);
+function updateJoystickOutput(TX, TY) {
+    //dont move joystick when you arent touching the joystick. give 30px of leyway
+    if(TX < joystickbaseRect.left-30 || TX > joystickbaseRect.right+30 || TY > joystickbaseRect.bottom+30 || TY < joystickbaseRect.top-30) return; 
+    const dx = TX - joystickcenterX;
+    const dy = TY - joystickcenterY;
+    const distance = Math.min(Math.sqrt(dx * dx + dy * dy), joystickmaxDistance);
             
     const angle = Math.atan2(dy, dx);
-    const magnitude = distance / maxDistance;
+    const magnitude = distance / joystickmaxDistance;
             
     // Normalized values (-1 to 1)
     const normalizedX = magnitude * Math.cos(angle);
@@ -49,9 +64,24 @@ function resetJoystick() {
     joystickOutput.angle = 0;            
     joystickHandle.style.transform = 'translate(0, 0)';
 }
+
+function acceptButtonPress(TX,TY){
+    if(TX >= acceptButtonRect.left && TX < acceptButtonRect.left + acceptButtonRect.width){
+        if(TY >= acceptButtonRect.top && TY < acceptButtonRect.top + acceptButtonRect.height){
+            acceptPressed = true;
+        }
+    }
+}
+function declineButtonPress(TX,TY){
+    if(TX >= declineButtonRect.left && TX < declineButtonRect.left + declineButtonRect.width){
+        if(TY >= declineButtonRect.top && TY < declineButtonRect.top + declineButtonRect.height){
+            declinePressed = true;
+        }
+    }
+}
         
 // Touch events
-joystickContainer.addEventListener('touchstart', (e) => {   
+MobileScreenControlsContainer.addEventListener('touchstart', (e) => {   
     if (activeTouchId === null) {
         const touch = e.touches[0];
         activeTouchId = touch.identifier;
@@ -60,7 +90,7 @@ joystickContainer.addEventListener('touchstart', (e) => {
     }
 },{passive : false});
         
-joystickContainer.addEventListener('touchmove', (e) => {    
+MobileScreenControlsContainer.addEventListener('touchmove', (e) => {    
     for (let i = 0; i < e.touches.length; i++) {
         const touch = e.touches[i];
         if (touch.identifier === activeTouchId) {
@@ -71,7 +101,7 @@ joystickContainer.addEventListener('touchmove', (e) => {
     }
 },{passive : false});
         
-joystickContainer.addEventListener('touchend', (e) => {    
+MobileScreenControlsContainer.addEventListener('touchend', (e) => {    
     for (let i = 0; i < e.changedTouches.length; i++) {
         const touch = e.changedTouches[i];
         if (touch.identifier === activeTouchId) {
@@ -81,17 +111,56 @@ joystickContainer.addEventListener('touchend', (e) => {
             break;
         }
     }
-},{passive : false});
-        
-// Detect touch device and show joystick if needed
-function isTouchDevice() {
-    return (('ontouchstart' in window) ||
-        navigator.maxTouchPoints > 0) ||
-        (navigator.msMaxTouchPoints > 0);
-}
-if (isTouchDevice()) {
-    joystickContainer.style.display = 'block';
-}
+},{passive : false});  
+
+acceptButton.addEventListener('touchstart', (e) => {
+    if(activeTouchId === null) {
+        const touch = e.touches[0];
+        activeTouchId = touch.identifier;
+        acceptButtonPress(touch.clientX, touch.clientY);
+        e.preventDefault();
+    }
+},{passive:false});
+declineButton.addEventListener('touchstart', (e) => {
+    if(activeTouchId === null) {
+        const touch = e.touches[0];
+        activeTouchId = touch.identifier;
+        declineButtonPress(touch.clientX, touch.clientY);
+        e.preventDefault();
+    }
+},{passive:false});
+acceptButton.addEventListener('touchend', (e) => {    
+    for (let i = 0; i < e.changedTouches.length; i++) {
+        const touch = e.changedTouches[i];
+        if (touch.identifier === activeTouchId) {
+            acceptPressed = false;
+            activeTouchId = null;
+            e.preventDefault();
+            break;
+        }
+    }
+},{passive : false});  
+declineButton.addEventListener('touchend', (e) => {    
+    for (let i = 0; i < e.changedTouches.length; i++) {
+        const touch = e.changedTouches[i];
+        if (touch.identifier === activeTouchId) {
+            declinePressed = false;
+            activeTouchId = null;
+            e.preventDefault();
+            break;
+        }
+    }
+},{passive : false});  
+DocBody.onresize = function(){
+    console.log('Document has been resized');
+    joystickbaseRect = joystickBase.getBoundingClientRect();
+    joystickcenterX = joystickbaseRect.left + joystickbaseRect.width / 2;
+    joystickcenterY = joystickbaseRect.top + joystickbaseRect.width / 2;
+    joystickmaxDistance = joystickbaseRect.width / 3;
+    acceptButtonRect = acceptButton.getBoundingClientRect();
+    declineButtonRect = declineButton.getBoundingClientRect();
+};
+
 
 // a player entity
 export class PlayerEntity extends me.Sprite {
@@ -140,39 +209,41 @@ export class PlayerEntity extends me.Sprite {
      * update the player pos
      */
     update(dt) {
-        if(!isTouchDevice()){
-        if (me.input.isKeyPressed("left")) {
-            // update the entity velocity
-            this.body.force.x = -this.body.maxVel.x;
-            if (!this.isCurrentAnimation("walk_left")) {
-                this.setCurrentAnimation("walk_left");
-            }
-        } else if (me.input.isKeyPressed("right")) {
+        
+        if(!isTouchDevice()){            
+            if (me.input.isKeyPressed("left")) {
+                // update the entity velocity
+                this.body.force.x = -this.body.maxVel.x;
+                if (!this.isCurrentAnimation("walk_left")) {
+                    this.setCurrentAnimation("walk_left");
+                }
+            } else if (me.input.isKeyPressed("right")) {
             // update the entity velocity
             this.body.force.x = this.body.maxVel.x;
             if (!this.isCurrentAnimation("walk_right")) {
                 this.setCurrentAnimation("walk_right");
             }
-        } else {
-            this.body.force.x = 0;
-        }
-        if (me.input.isKeyPressed("up")) {
-            // update the entity velocity
-            this.body.force.y = -this.body.maxVel.y;
-            if (!this.isCurrentAnimation("walk_up") && this.body.vel.x === 0) {
-                this.setCurrentAnimation("walk_up");
+            } else {
+                this.body.force.x = 0;
             }
-        } else if (me.input.isKeyPressed("down")) {
+            if (me.input.isKeyPressed("up")) {
+                // update the entity velocity
+                this.body.force.y = -this.body.maxVel.y;
+                if (!this.isCurrentAnimation("walk_up") && this.body.vel.x === 0) {
+                    this.setCurrentAnimation("walk_up");
+                }
+            } else if (me.input.isKeyPressed("down")) {
             // update the entity velocity
             this.body.force.y = this.body.maxVel.y;
             if (!this.isCurrentAnimation("walk_down") && this.body.vel.x === 0) {
                 this.setCurrentAnimation("walk_down");
             }
-        } else {
-            this.body.force.y = 0;
-        }
+            } else {
+                this.body.force.y = 0;
+            }
         }else{
-            if(!(joystickOutput.x == 0 && joystickOutput.y == 0)){
+            
+            if((joystickOutput.x != 0 && joystickOutput.y != 0)){                
                 this.body.force.x = joystickOutput.x * this.body.maxVel.x;
                 this.body.force.y = joystickOutput.y * this.body.maxVel.y;
                 //pi * 0.25 = 0.78539816339744830961566084581988
@@ -189,12 +260,9 @@ export class PlayerEntity extends me.Sprite {
                     if (!this.isCurrentAnimation("walk_right")) {
                     this.setCurrentAnimation("walk_right");
                     }
-                }else /*if(joystickOutput.angle <= 2.357){*/
-                    if (!this.isCurrentAnimation("walk_down")) {
+                }else if (!this.isCurrentAnimation("walk_down")) {
                     this.setCurrentAnimation("walk_down");
-                    }
-                //}
-                
+                }                             
             }
         }
         // check if we moved (an "idle" animation would definitely be cleaner)
@@ -236,7 +304,7 @@ export class NPCEntity extends me.Sprite{
         let newx = player.x - x;
         let newy = player.y - y;
         if(Math.sqrt(newx * newx + newy * newy) < interactradius){
-            if(me.input.isKeyPressed("accept")){
+            if((isTouchDevice() && acceptPressed) || me.input.isKeyPressed("accept")){
                 console.log("Hello World");
             }
         }        
