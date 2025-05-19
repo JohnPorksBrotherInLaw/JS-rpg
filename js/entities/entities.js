@@ -29,7 +29,9 @@ let declineButtonRect = declineButton.getBoundingClientRect();
 let declinePressed = false;
         
 let activeTouchId = null;
-MobileScreenControlsContainer.style.display = 'block';        
+if(isTouchDevice()){
+MobileScreenControlsContainer.style.display = 'block';   
+}     
     // Output values
 const joystickOutput = {
     x: 0,
@@ -308,8 +310,7 @@ export class NPCEntity extends me.Sprite{
         this.body = new me.Body(this, (new me.Rect(16, 16, 16, 16)));        
     }
     
-    update(dt){
-        if(me.state != me.state.MENU){
+    update(dt){        
             //see if the character is close enough to interact       
             let newx = game.playerXCoord - this.pos.x;
             let newy = game.playerYCoord - this.pos.y;
@@ -318,7 +319,7 @@ export class NPCEntity extends me.Sprite{
                     GUI.ShowDialogueBox("yolo");                   
                 }
             }    
-        }            
+                   
         super.update(dt);
     }
 }
