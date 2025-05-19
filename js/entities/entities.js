@@ -205,7 +205,7 @@ export class PlayerEntity extends me.Sprite {
             me.input.bindKey(me.input.KEY.UP,    "up");
             me.input.bindKey(me.input.KEY.DOWN,  "down");
             me.input.bindKey(me.input.KEY.Z, "accept");
-            me.input.bindKey(me.input.KEY.Z, "decline");
+            me.input.bindKey(me.input.KEY.X, "decline");
         }
         // define an additional basic walking animation
         this.addAnimation("walk_left",  [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]);
