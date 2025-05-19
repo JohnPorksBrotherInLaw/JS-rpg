@@ -1,7 +1,9 @@
 import * as me from 'melonjs';
 import game from '../game.js';
+import * as GUI from './gui.js';
 //MOBILE CONTROLS FOR USE IN PLAYERENTITY
 //I THINK POINTER EVENTS INCLUDE TOUCHSCREEN NOW THAT I THINK ABT IT
+//I HAVE OTHER SHIT TO DO RN
 // Detect touch device and show controls if needed
 function isTouchDevice() {
     return (('ontouchstart' in window) ||
@@ -172,7 +174,6 @@ DocBody.onresize = function(){
     declineButtonRect = declineButton.getBoundingClientRect();
 };
 
-
 // a player entity
 export class PlayerEntity extends me.Sprite {
 
@@ -186,10 +187,9 @@ export class PlayerEntity extends me.Sprite {
             }, settings)
         );
 
-        // add a physic body with a diamond as a body shape
+        // add a physic body with a rect as a body shape
        
-        this.body = new me.Body(this, (new me.Rect(16, 16, 16, 16)));
-        this.body.gravityScale = 0;
+        this.body = new me.Body(this, (new me.Rect(16, 16, 16, 16)));        
         // walking & jumping speed
         this.body.setMaxVelocity(2.5, 2.5);
         this.body.setFriction(0.4,0.4);
@@ -215,10 +215,7 @@ export class PlayerEntity extends me.Sprite {
         // set default one
         this.setCurrentAnimation("walk_down");
     }
-
-    /**
-     * update the player pos
-     */
+    
     update(dt) {        
         if(!isTouchDevice()){            
             if (me.input.isKeyPressed("left")) {
@@ -274,6 +271,10 @@ export class PlayerEntity extends me.Sprite {
                 }                             
             }
         }
+        //instead of having a public static playerreference which is fucking impossible for some reason, ill just upload the x and y coords to game instead
+        game.playerXCoord = this.pos.x;
+        game.playerYCoord = this.pos.y;
+        //console.log(this.pos);
         // check if we moved (an "idle" animation would definitely be cleaner)
         if (this.body.vel.x !== 0 || this.body.vel.y !== 0) {
             super.update(dt);
@@ -302,25 +303,22 @@ export class NPCEntity extends me.Sprite{
                 framewidth: 32,
                 frameheight: 32,                                          
             }, settings)
-        );                 
-        this.body = new me.Body(this, (new me.Rect(16, 16, 16, 16)));
-        this.body.gravityScale = 0;
+        );        
+        this.interactradius = 64;         
+        this.body = new me.Body(this, (new me.Rect(16, 16, 16, 16)));        
     }
     
     update(dt){
-        //see if the character is close enough to interact
-        
-        if(game.player != null){
-            console.log('this.player)');
-            let newx = this.player.x - this.x;
-            let newy = this.player.y - this.y;
-            if(Math.sqrt(newx * newx + newy * newy) < this.interactradius){
-                
+        if(me.state != me.state.MENU){
+            //see if the character is close enough to interact       
+            let newx = game.playerXCoord - this.pos.x;
+            let newy = game.playerYCoord - this.pos.y;
+            if(Math.sqrt(newx * newx + newy * newy) < this.interactradius){                
                 if((isTouchDevice() && acceptPressed) || me.input.isKeyPressed("accept")){
-                    
+                    GUI.ShowDialogueBox("yolo");                   
                 }
-            }        
-        }
+            }    
+        }            
         super.update(dt);
     }
 }

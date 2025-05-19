@@ -1,6 +1,7 @@
-//public static game data
-var game = {   
-    playerRef : null,
-};
-
+var game = {
+    playerXCoord : 0,
+    playerYCoord : 0,
+    UITextureAtlas:null,
+    dialogueBoxShown:false,
+}
 export default game;
