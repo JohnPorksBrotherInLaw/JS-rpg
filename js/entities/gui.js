@@ -218,6 +218,7 @@ export function ShowDialogueBox(inputJson){
     if(!game.dialogueBoxShown){
         game.dialogueBoxShown = true;
         console.log("showing dialogue box");
+        game.disallowMovement = true;
         //get the json that the textbox is referencing and obtain the text
         const json = me.loader.getJSON(inputJson);
         game.talkingSpriteAtlas = new me.TextureAtlas(

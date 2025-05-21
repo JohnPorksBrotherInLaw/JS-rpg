@@ -45,7 +45,7 @@ export class PlayerEntity extends me.Sprite {
     }
     
     update(dt) {        
-        //if(game.isTouchDevice){            
+        if(!game.disallowMovement){            
             if (me.input.isKeyPressed("left")) {
                 // update the entity velocity
                 this.body.force.x = -this.body.maxVel.x;
@@ -76,7 +76,7 @@ export class PlayerEntity extends me.Sprite {
             } else {
                 this.body.force.y = 0;
             }
-       // }else{            
+        }          
             
         //}
         //instead of having a public static playerreference which is fucking impossible for some reason, ill just upload the x and y coords to game instead
@@ -90,7 +90,7 @@ export class PlayerEntity extends me.Sprite {
         }
     }
     pointerMove(event) {
-
+        if(!game.disallowMovement){
         let dir = new me.Vector2d(event.gameWorldX - this.pos.x,event.gameWorldY - this.pos.y).normalize();
         const angle = Math.atan2(dir.y,dir.x);
                
@@ -114,7 +114,7 @@ export class PlayerEntity extends me.Sprite {
                 }else if (!this.isCurrentAnimation("walk_down")) {
                     this.setCurrentAnimation("walk_down");
                 }                             
-            
+            }    
     }
     /**
      * colision handler

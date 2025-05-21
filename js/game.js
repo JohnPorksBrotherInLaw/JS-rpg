@@ -1,4 +1,5 @@
-var game = {   
+var game = {  
+    disallowMovement: false, 
     acceptPressed:false,
     declinePressed:false,
     playerXCoord : 0,
