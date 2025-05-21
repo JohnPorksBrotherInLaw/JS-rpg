@@ -4,7 +4,7 @@ import game from "../game.js";
 // a Panel type container
 export class UIContainer extends me.UIBaseElement {
 
-    constructor(x, y, width, height, label) {
+    constructor(x, y, width, height/*,label = ""*/,pic, holdable = true, dragable = false) {
         // call the constructor
         super(x, y, width, height);
 
@@ -12,15 +12,15 @@ export class UIContainer extends me.UIBaseElement {
         this.anchorPoint.set(0, 0);
 
         // give a name
-        this.name = "UIPanel";
+        //this.name = "UIPanel";
 
         // back panel sprite
         this.addChild(game.UITextureAtlas.createSpriteFromName(
-            "grey_button05",
+            pic,
             { width : this.width, height : this.height},
             true
         ));
-
+/*
         this.addChild(new me.Text(this.width / 2, 16, {
             font:"sansserif",
             size: 20,
@@ -29,30 +29,28 @@ export class UIContainer extends me.UIBaseElement {
             textBaseline: "top",
             bold: true,
             text: label
-        }));
+        }));*/
 
         // input status flags
-        this.isHoldable = true;
+        this.isHoldable = holdable;
 
         // panel can be dragged
-        this.isDraggable = false;
-    }
+        this.isDraggable = dragable;
+    };
+   
 };
 
 export class ButtonUI extends me.UISpriteElement {
-    /**
-     * constructor
-     */
-    constructor(x, y, color, altcolor, label) {
-        super(x, y, {
-            image: game.UITextureAtlas,
-            region : color,
+    //simplified version of buttonui from the example. removed usage of multiple sprites for ease of mind    
+    constructor(x,y,pic,/*label,*/onclick,onrelease){
+         super(x, y, {
+            image: game.UITextureAtlas,   
+            region: pic         
         });
-
-        // offset of the two used images in the texture
-        this.unclicked_region = game.UITextureAtlas.getRegion(color);
-        this.clicked_region = game.UITextureAtlas.getRegion(altcolor);
-
+        
+        // offset of the two used images in the texture        
+        this.clickEvent = onclick;
+        this.releaseEvent = onrelease;
         this.anchorPoint.set(0, 0);
         this.setOpacity(0.5);
 
@@ -65,12 +63,11 @@ export class ButtonUI extends me.UISpriteElement {
             offScreenCanvas: (me.video.renderer.WebGLVersion >= 1)
         });
 
-        this.label = label;
+        //this.label = label;
 
         // only the parent container is a floating object
         this.floating = false;
     }
-
     /**
      * function called when the pointer is over the object
      */
@@ -88,20 +85,18 @@ export class ButtonUI extends me.UISpriteElement {
     /**
      * function called when the object is clicked on
      */
-    onClick(event) {
-        this.translate(0, this.height - this.clicked_region.height);
-        this.setRegion(this.clicked_region);
-        // don't propagate the event
+    onClick() {        
+        this.clickEvent();
         return false;
     }
 
     /**
      * function called when the pointer button is released
      */
-    onRelease(/* event */) {
-        this.setRegion(this.unclicked_region);
-        this.translate(0, -(this.height - this.clicked_region.height));
-        // don't propagate the event
+    onRelease(/* event */) {       
+        if(this.releaseEvent != undefined){
+            this.releaseEvent();
+        }
         return false;
     }
 
@@ -127,7 +122,7 @@ export class CheckBoxUI extends me.UISpriteElement {
     /**
      * constructor
      */
-    constructor(x, y, texture, on_icon, off_icon, on_label, off_label) {
+    constructor(x, y, texture, on_icon, off_icon, on_label, off_label,variable,onValue,offValue) {
 
         // call the parent constructor
         super(x, y, {
@@ -141,7 +136,9 @@ export class CheckBoxUI extends me.UISpriteElement {
 
         //this.anchorPoint.set(0.5, 0);
         this.setOpacity(0.5);
-
+        this.variable = variable;
+        this.onValue = onValue;
+        this.offValue = offValue;
         this.isSelected = true;
 
         this.label_on = on_label;
@@ -163,6 +160,20 @@ export class CheckBoxUI extends me.UISpriteElement {
         // only the parent container is a floating object
         this.floating = false;
     }
+    /*
+    example usage:
+     me.UIBaseElement.addChild(new CheckBoxUI(
+            0, 0,
+            game.UITextureAtlas,
+            "green_button04",
+            "green_button04",
+            "fullscreen ON", // default
+            "fullscreen OFF",
+            game.isFullscreen,
+            true,
+            false
+        ));
+    */
 
     /**
      * function called when the pointer is over the object
@@ -185,9 +196,11 @@ export class CheckBoxUI extends me.UISpriteElement {
         if (selected) {
             this.setRegion(this.on_icon_region);
             this.isSelected = true;
+            this.variable = this.onValue;
         } else {
             this.setRegion(this.off_icon_region);
             this.isSelected = false;
+            this.variable = this.offValue;
         }
     }
 
@@ -209,32 +222,47 @@ export class CheckBoxUI extends me.UISpriteElement {
         );
     }
 };
+export class JoystickHandle extends UIContainer{
+    //unique class for the joystick handle on the mobile controls ui
+    //joystick needs to be able to reference itself to get and set its coords
+    constructor(){
+        //constant values cz there should only ever be one
+        super(30,30,59,59,"joystickhandle",true,true);   
+        this.doUpdate = false;        
+    };
+    
+    update(dt){
+        //if(this.doUpdate){
+           // console.log("moving")
+            game.joystickX = this.pos.x /*> 0 ? Math.min(this.pos.x/3,1) : Math.max(this.pos.x/3,-1)*/;
+            game.joystickY = this.pos.y /*> 0 ? Math.min(this.pos.y/3,1) : Math.max(this.pos.y/3,-1)*/;
+            game.joytstickAngle = Math.atan2(game.joystickY,game.joystickX);
+        //}
+        super.update(dt);
+    }
+    onHold(){
+       // console.log("joystick values tied to touch location");
+        this.doUpdate = true;
+       
+        
+    }
+    onRelease(){
+        //console.log("reseting joystick");
+        this.doUpdate = false;
+        game.joystickX = 0;
+        game.joystickY = 0;   
+        this.pos.x = 29.5;
+        this.pos.y = 29.5;
+    }
+}
+
 export function ShowDialogueBox(text){
     if(!game.dialogueBoxShown){
         game.dialogueBoxShown = true;
         console.log("showing dialogue box");
         
-        let panel = new UIContainer(100, 100, 450, 325,text);
-        var cbPanel = new me.UIBaseElement(125, 75, 100, 100);
-         // add a few checkbox
-        cbPanel.addChild(new CheckBoxUI(
-            0, 0,
-            game.UITextureAtlas,
-            "green_button04",
-            "green_button04",
-            "Music ON", // default
-            "Music OFF"
-        ));
-        cbPanel.addChild(new CheckBoxUI(
-            0, 50,
-            game.UITextureAtlas,
-            "green_button04",
-            "green_button04",
-            "Sound FX ON", // default
-            "Sound FX OFF"
-        ));
-        panel.addChild(cbPanel);
-
+        let panel = new UIContainer(100, 100, 600, 200,/*text,*/"whitebox");      
+/*
         // a few buttons
         panel.addChild(new ButtonUI(
             125, 175,
@@ -253,7 +281,7 @@ export function ShowDialogueBox(text){
             "green_button04",
             "green_button04",
             "Cancel"
-        ));
+        ));*/
         // add the panel to word (root) container
         me.game.world.addChild(panel, 16);
     }

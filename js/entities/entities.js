@@ -5,33 +5,29 @@ import * as GUI from './gui.js';
 //I THINK POINTER EVENTS INCLUDE TOUCHSCREEN NOW THAT I THINK ABT IT
 //I HAVE OTHER SHIT TO DO RN
 // Detect touch device and show controls if needed
-function isTouchDevice() {
-    return (('ontouchstart' in window) ||
-        navigator.maxTouchPoints > 0) ||
-        (navigator.msMaxTouchPoints > 0);
-}
+
 
 //the joystick on the screen for mobile
 const DocBody = document.querySelector('body');
-const MobileScreenControlsContainer = document.getElementById('mobile-screen-controls-container');
-const joystickHandle = document.getElementById('joystick-handle');
-const joystickBase = document.getElementById('joystick-base');        
-let joystickbaseRect = joystickBase.getBoundingClientRect();
-let joystickcenterX = joystickbaseRect.left + joystickbaseRect.width / 2;
-let joystickcenterY = joystickbaseRect.top + joystickbaseRect.width / 2;
-let joystickmaxDistance = joystickbaseRect.width / 3;
+//const MobileScreenControlsContainer = document.getElementById('mobile-screen-controls-container');
+//const joystickHandle = document.getElementById('joystick-handle');
+//const joystickBase = document.getElementById('joystick-base');        
+//let joystickbaseRect = joystickBase.getBoundingClientRect();
+//let joystickcenterX = joystickbaseRect.left + joystickbaseRect.width / 2;
+//let joystickcenterY = joystickbaseRect.top + joystickbaseRect.width / 2;
+//let joystickmaxDistance = joystickbaseRect.width / 3;
 
-const acceptButton = document.getElementById('accept-button');
-let acceptButtonRect = acceptButton.getBoundingClientRect();
-let acceptPressed = false;
-const declineButton = document.getElementById('decline-button');
-let declineButtonRect = declineButton.getBoundingClientRect();
-let declinePressed = false;
+//const acceptButton = document.getElementById('accept-button');
+//let acceptButtonRect = acceptButton.getBoundingClientRect();
+
+//const declineButton = document.getElementById('decline-button');
+//let declineButtonRect = declineButton.getBoundingClientRect();
+
         
-let activeTouchId = null;
-if(isTouchDevice()){
-MobileScreenControlsContainer.style.display = 'block';   
-}     
+//let activeTouchId = null;
+//if(isTouchDevice()){
+//MobileScreenControlsContainer.style.display = 'block';   
+//}     
     // Output values
 const joystickOutput = {
     x: 0,
@@ -70,14 +66,12 @@ function resetJoystick() {
     joystickOutput.angle = 0;            
     joystickHandle.style.transform = 'translate(0, 0)';
 }
-
+/*
 function acceptButtonPress(TX,TY){
     if(TX >= acceptButtonRect.left && TX < acceptButtonRect.left + acceptButtonRect.width){
         if(TY >= acceptButtonRect.top && TY < acceptButtonRect.top + acceptButtonRect.height){
             
-            acceptPressed = true;
-            acceptButton.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
-            acceptButton.style.border = "2px solid rgba(255, 255, 255, 0.8)";    
+           
         }
     }
 }
@@ -90,8 +84,9 @@ function declineButtonPress(TX,TY){
         }
     }
 }
-        
+    
 // Touch events
+/*
 MobileScreenControlsContainer.addEventListener('touchstart', (e) => {   
     if (activeTouchId === null) {
         const touch = e.touches[0];
@@ -123,7 +118,7 @@ MobileScreenControlsContainer.addEventListener('touchend', (e) => {
         }
     }
 },{passive : false});  
-
+/*
 acceptButton.addEventListener('touchstart', (e) => {
     if(activeTouchId === null) {
         const touch = e.touches[0];
@@ -165,7 +160,7 @@ declineButton.addEventListener('touchend', (e) => {
             break;
         }
     }
-},{passive : false});  
+},{passive : false});  */
 DocBody.onresize = function(){
     console.log('Document has been resized');
     joystickbaseRect = joystickBase.getBoundingClientRect();
@@ -175,6 +170,7 @@ DocBody.onresize = function(){
     acceptButtonRect = acceptButton.getBoundingClientRect();
     declineButtonRect = declineButton.getBoundingClientRect();
 };
+
 
 // a player entity
 export class PlayerEntity extends me.Sprite {
@@ -201,7 +197,7 @@ export class PlayerEntity extends me.Sprite {
         me.game.viewport.follow(this, me.game.viewport.AXIS.BOTH);
 
         // enable keyboard
-        if(!isTouchDevice()){
+        if(game.isTouchDevice){
             me.input.bindKey(me.input.KEY.LEFT,  "left");
             me.input.bindKey(me.input.KEY.RIGHT, "right");
             me.input.bindKey(me.input.KEY.UP,    "up");
@@ -219,7 +215,7 @@ export class PlayerEntity extends me.Sprite {
     }
     
     update(dt) {        
-        if(!isTouchDevice()){            
+        if(game.isTouchDevice){            
             if (me.input.isKeyPressed("left")) {
                 // update the entity velocity
                 this.body.force.x = -this.body.maxVel.x;
@@ -251,20 +247,21 @@ export class PlayerEntity extends me.Sprite {
                 this.body.force.y = 0;
             }
         }else{            
-            if((joystickOutput.x != 0 && joystickOutput.y != 0)){                
-                this.body.force.x = joystickOutput.x * this.body.maxVel.x;
-                this.body.force.y = joystickOutput.y * this.body.maxVel.y;
+            if((game.joystickX != 0 && game.joystickY != 0)){  
+                console.log("beep")              
+                this.body.force.x = game.joystickX * this.body.maxVel.x;
+                this.body.force.y = game.joystickY * this.body.maxVel.y;
                 //pi * 0.25 = 0.78539816339744830961566084581988
                 //pi *0.75 = 2.3561944901923449288469825374596
-                if(joystickOutput.angle <= -2.357 || joystickOutput.angle > 2.357){
+                if(game.joytstickAngle <= -2.357 || game.joytstickAngle > 2.357){
                     if (!this.isCurrentAnimation("walk_left")) {
                     this.setCurrentAnimation("walk_left");
                     }
-                }else if(joystickOutput.angle <= -0.785){
+                }else if(game.joytstickAngle<= -0.785){
                     if (!this.isCurrentAnimation("walk_up")) {
                     this.setCurrentAnimation("walk_up");
                     }
-                }else if(joystickOutput.angle <= 0.785){
+                }else if(game.joytstickAngle <= 0.785){
                     if (!this.isCurrentAnimation("walk_right")) {
                     this.setCurrentAnimation("walk_right");
                     }
@@ -315,7 +312,7 @@ export class NPCEntity extends me.Sprite{
             let newx = game.playerXCoord - this.pos.x;
             let newy = game.playerYCoord - this.pos.y;
             if(Math.sqrt(newx * newx + newy * newy) < this.interactradius){                
-                if((isTouchDevice() && acceptPressed) || me.input.isKeyPressed("accept")){
+                if((isTouchDevice() && game.acceptPressed) || me.input.isKeyPressed("accept")){
                     GUI.ShowDialogueBox("yolo");                   
                 }
             }    

@@ -7,7 +7,7 @@ var resources = [
     { name: "testTileMap",  type:"image", src: "data/img/testTileMap.png" },  
     { name: "npc0",  type:"image", src: "data/img/npc0.png" },  
     { name: "Blank_Sprite_Sheet", type:"image", src: "data/img/Blank_Sprite_Sheet_4_2_by_KnightYamato.png" },
-    {name:"UIAtlas", type:"image", src: "data/img/UIAtlas.png"},
+    {name:"UIAtlasImg", type:"image", src: "data/img/UIAtlas.png"},
 
     /* Maps.
      * @example
@@ -34,7 +34,7 @@ var resources = [
      *{ name: "example_tps", type: "json", src: "data/img/example_tps.json" },
      */
     {name:"testMap-npc0",type:"json", src:"data/npc/testMap-npc0.json"},
-    {name:'uiatlas',type:'json',src:'data/img/UIAtlas.json'},
+    {name:'UIAtlasJson',type:'json',src:'data/img/UIAtlas.json'},
 
 ];
 
