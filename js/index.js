@@ -12,19 +12,19 @@ export default function onload() {
         alert("Your browser does not support HTML5 canvas.");
         return;
     }  
-    game.isTouchDevice = isTouchDevice();
+    
     // set all ressources to be loaded
     me.loader.preload(resources, () => {        
         game.UITextureAtlas = new me.TextureAtlas([
-           me.loader.getImage("UIAtlasImg"),   
+            //me.loader.getImage("UIAtlasImg"),   
             me.loader.getJSON("UIAtlasJson"), 
                     
         ]);
+        //console.log(game.UITextureAtlas)
         // register our objects entity in the object pool  
         me.pool.register("mainPlayer", PlayerEntity);    
-        me.pool.register("npc0", NPCEntity); 
-        //me.level.load("testMap");
-        
+        me.pool.register("npc0", NPCEntity);       
+               
         // set the "Play/Ingame" Screen Object
         me.state.set(me.state.PLAY, new PlayScreen());  
         me.state.change(me.state.PLAY);  
@@ -33,8 +33,3 @@ export default function onload() {
     }); 
               
 };
-function isTouchDevice() {
-    return (('ontouchstart' in window) ||
-        navigator.maxTouchPoints > 0) ||
-        (navigator.msMaxTouchPoints > 0);
-}

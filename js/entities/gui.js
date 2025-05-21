@@ -4,7 +4,7 @@ import game from "../game.js";
 // a Panel type container
 export class UIContainer extends me.UIBaseElement {
 
-    constructor(x, y, width, height/*,label = ""*/,pic, holdable = true, dragable = false) {
+    constructor(x, y, width, height, atlas, frame, holdable = false, dragable = false) {
         // call the constructor
         super(x, y, width, height);
 
@@ -15,21 +15,11 @@ export class UIContainer extends me.UIBaseElement {
         //this.name = "UIPanel";
 
         // back panel sprite
-        this.addChild(game.UITextureAtlas.createSpriteFromName(
-            pic,
+        this.addChild(atlas.createSpriteFromName(
+            frame,
             { width : this.width, height : this.height},
             true
         ));
-/*
-        this.addChild(new me.Text(this.width / 2, 16, {
-            font:"sansserif",
-            size: 20,
-            fillStyle: "black",
-            textAlign: "center",
-            textBaseline: "top",
-            bold: true,
-            text: label
-        }));*/
 
         // input status flags
         this.isHoldable = holdable;
@@ -224,32 +214,35 @@ export class CheckBoxUI extends me.UISpriteElement {
 };
 
 
-export function ShowDialogueBox(text){
+export function ShowDialogueBox(inputJson){
     if(!game.dialogueBoxShown){
         game.dialogueBoxShown = true;
         console.log("showing dialogue box");
-        
-        let panel = new UIContainer(100, 100, 600, 200,/*text,*/"whitebox");      
-/*
-        // a few buttons
-        panel.addChild(new ButtonUI(
-            125, 175,
-            "green_button04",
-            "green_button04",
-            "Video Options"
-        ));
-        panel.addChild(new ButtonUI(
-            30, 250,
-            "green_button04",
-            "green_button04",
-            "Accept"
-        ));
-        panel.addChild(new ButtonUI(
-            230, 250,
-            "green_button04",
-            "green_button04",
-            "Cancel"
-        ));*/
+        //get the json that the textbox is referencing and obtain the text
+        const json = me.loader.getJSON(inputJson);
+        game.talkingSpriteAtlas = new me.TextureAtlas(
+           // me.loader.getImage(json.talkingSprite),
+            me.loader.getJSON(json.talkingSpriteJson)
+        )
+        console.log(game.talkingSpriteAtlas)
+        let panel = new UIContainer(0,0,1,1,game.UITextureAtlas,"transparent");
+        panel.addChild(new UIContainer(250,30,256,256,game.talkingSpriteAtlas,"normal"));
+        panel.addChild(new UIContainer(100, 280, 600, 120,game.UITextureAtlas,"whitebox"));      
+        panel.addChild(new me.Text(100,250,{ 
+            font:"sansserif",
+            size: 40,
+            fillStyle: "black",
+            textAlign: "left",
+            textBaseline: "top",
+            bold: true,
+            text: json.name}))
+        panel.addChild(new me.Text(120,300,{ 
+            font:"sansserif",
+            size: 18,
+            fillStyle: "black",
+            textAlign: "left",
+            textBaseline: "top",            
+            text: json.dialogue[0][0]}));
         // add the panel to word (root) container
         me.game.world.addChild(panel, 16);
     }

@@ -16,7 +16,7 @@ class PlayScreen extends me.Stage {
 
         // register on mouse event
         
-       if(game.isTouchDevice){
+       if(me.device.isMobile){
             this.InitMobileControls();  
             //we getting rid of the joystick. use the tap location to move in the direction
             me.input.registerPointerEvent("pointermove", me.game.viewport, function (event) {
@@ -30,7 +30,7 @@ constructor(){
         console.log("initializing mobile control layout");
 
         //create some ui holder for my things (perhpas i dont need this)        
-        let panel = new GUI.UIContainer(0,0,1,1,"transparent",false,false);
+        let panel = new GUI.UIContainer(0,0,1,1,game.UITextureAtlas,"transparent",false,false);
 
         panel.addChild(new GUI.ButtonUI(700,270,"acceptbutton",() => {
             console.log("yes");

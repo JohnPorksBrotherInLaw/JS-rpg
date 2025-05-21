@@ -1,8 +1,10 @@
 {
     "name" : "Spooki",
+    "talkingSprite" : "npc0talkingSprite",
+    "talkingSpriteJson" : "npc0talkingSpriteJson",
     "dialogue" : [
         [
-            "Hello there. My name is Spooki. Nice to meet you.",
+            "What do *you* want",
             "Spooki"
         ],
         "It's nice weather today, isn't it?",
