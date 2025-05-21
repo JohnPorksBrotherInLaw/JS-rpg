@@ -191,20 +191,20 @@ export class PlayerEntity extends me.Sprite {
         // walking & jumping speed
         this.body.setMaxVelocity(2.5, 2.5);
         this.body.setFriction(0.4,0.4);
-
-
+        // subscribe to pointer move event
+        this.pointerEvent = me.event.on("pointermove", this.pointerMove, this);
         // set the display around our position
         me.game.viewport.follow(this, me.game.viewport.AXIS.BOTH);
 
         // enable keyboard
-        if(game.isTouchDevice){
+       // if(game.isTouchDevice){
             me.input.bindKey(me.input.KEY.LEFT,  "left");
             me.input.bindKey(me.input.KEY.RIGHT, "right");
             me.input.bindKey(me.input.KEY.UP,    "up");
             me.input.bindKey(me.input.KEY.DOWN,  "down");
             me.input.bindKey(me.input.KEY.Z, "accept");
             me.input.bindKey(me.input.KEY.X, "decline");
-        }
+        //}
         // define an additional basic walking animation
         this.addAnimation("walk_left",  [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]);
         this.addAnimation("walk_right", [24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]);
@@ -215,7 +215,7 @@ export class PlayerEntity extends me.Sprite {
     }
     
     update(dt) {        
-        if(game.isTouchDevice){            
+        //if(game.isTouchDevice){            
             if (me.input.isKeyPressed("left")) {
                 // update the entity velocity
                 this.body.force.x = -this.body.maxVel.x;
@@ -246,30 +246,9 @@ export class PlayerEntity extends me.Sprite {
             } else {
                 this.body.force.y = 0;
             }
-        }else{            
-            if((game.joystickX != 0 && game.joystickY != 0)){  
-                console.log("beep")              
-                this.body.force.x = game.joystickX * this.body.maxVel.x;
-                this.body.force.y = game.joystickY * this.body.maxVel.y;
-                //pi * 0.25 = 0.78539816339744830961566084581988
-                //pi *0.75 = 2.3561944901923449288469825374596
-                if(game.joytstickAngle <= -2.357 || game.joytstickAngle > 2.357){
-                    if (!this.isCurrentAnimation("walk_left")) {
-                    this.setCurrentAnimation("walk_left");
-                    }
-                }else if(game.joytstickAngle<= -0.785){
-                    if (!this.isCurrentAnimation("walk_up")) {
-                    this.setCurrentAnimation("walk_up");
-                    }
-                }else if(game.joytstickAngle <= 0.785){
-                    if (!this.isCurrentAnimation("walk_right")) {
-                    this.setCurrentAnimation("walk_right");
-                    }
-                }else if (!this.isCurrentAnimation("walk_down")) {
-                    this.setCurrentAnimation("walk_down");
-                }                             
-            }
-        }
+       // }else{            
+            
+        //}
         //instead of having a public static playerreference which is fucking impossible for some reason, ill just upload the x and y coords to game instead
         game.playerXCoord = this.pos.x;
         game.playerYCoord = this.pos.y;
@@ -280,7 +259,33 @@ export class PlayerEntity extends me.Sprite {
             return true;
         }
     }
+    pointerMove(event) {
 
+        let dir = new me.Vector2d(event.gameWorldX - this.pos.x,event.gameWorldY - this.pos.y).normalize();
+        const angle = Math.atan2(dir.y,dir.x);
+               
+                    
+        this.body.force.x = dir.x * this.body.maxVel.x;
+        this.body.force.y = dir.y * this.body.maxVel.y;
+                //pi * 0.25 = 0.78539816339744830961566084581988
+                //pi *0.75 = 2.3561944901923449288469825374596
+        if(angle <= -2.357 || angle > 2.357){
+                    if (!this.isCurrentAnimation("walk_left")) {
+                    this.setCurrentAnimation("walk_left");
+                    }
+                }else if(angle<= -0.785){
+                    if (!this.isCurrentAnimation("walk_up")) {
+                    this.setCurrentAnimation("walk_up");
+                    }
+                }else if(angle <= 0.785){
+                    if (!this.isCurrentAnimation("walk_right")) {
+                    this.setCurrentAnimation("walk_right");
+                    }
+                }else if (!this.isCurrentAnimation("walk_down")) {
+                    this.setCurrentAnimation("walk_down");
+                }                             
+            
+    }
     /**
      * colision handler
      * (called when colliding with other objects)
@@ -312,7 +317,7 @@ export class NPCEntity extends me.Sprite{
             let newx = game.playerXCoord - this.pos.x;
             let newy = game.playerYCoord - this.pos.y;
             if(Math.sqrt(newx * newx + newy * newy) < this.interactradius){                
-                if((isTouchDevice() && game.acceptPressed) || me.input.isKeyPressed("accept")){
+                if(game.acceptPressed || me.input.isKeyPressed("accept")){
                     GUI.ShowDialogueBox("yolo");                   
                 }
             }    

@@ -15,11 +15,13 @@ class PlayScreen extends me.Stage {
         me.level.load("testMap");
 
         // register on mouse event
-        //me.input.registerPointerEvent("pointermove", me.game.viewport, function (event) {
-       //     me.event.emit("pointermove", event);
-       // }, false);
+        
        if(game.isTouchDevice){
             this.InitMobileControls();  
+            //we getting rid of the joystick. use the tap location to move in the direction
+            me.input.registerPointerEvent("pointermove", me.game.viewport, function (event) {
+                me.event.emit("pointermove", event);
+            }, false);
        }
     };
 constructor(){
@@ -42,10 +44,7 @@ constructor(){
             game.declinePressed = true;         
         }, () => {
             game.declinePressed = false;         
-        }));
-   
-        let joystickbase = panel.addChild(new GUI.UIContainer(20,260,118,118,"joystickbase"));
-        joystickbase.addChild(new GUI.JoystickHandle())
+        }));          
         
         me.game.world.addChild(panel, 10);
    };

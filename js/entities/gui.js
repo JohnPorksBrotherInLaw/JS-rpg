@@ -222,39 +222,7 @@ export class CheckBoxUI extends me.UISpriteElement {
         );
     }
 };
-export class JoystickHandle extends UIContainer{
-    //unique class for the joystick handle on the mobile controls ui
-    //joystick needs to be able to reference itself to get and set its coords
-    constructor(){
-        //constant values cz there should only ever be one
-        super(30,30,59,59,"joystickhandle",true,true);   
-        this.doUpdate = false;        
-    };
-    
-    update(dt){
-        //if(this.doUpdate){
-           // console.log("moving")
-            game.joystickX = this.pos.x /*> 0 ? Math.min(this.pos.x/3,1) : Math.max(this.pos.x/3,-1)*/;
-            game.joystickY = this.pos.y /*> 0 ? Math.min(this.pos.y/3,1) : Math.max(this.pos.y/3,-1)*/;
-            game.joytstickAngle = Math.atan2(game.joystickY,game.joystickX);
-        //}
-        super.update(dt);
-    }
-    onHold(){
-       // console.log("joystick values tied to touch location");
-        this.doUpdate = true;
-       
-        
-    }
-    onRelease(){
-        //console.log("reseting joystick");
-        this.doUpdate = false;
-        game.joystickX = 0;
-        game.joystickY = 0;   
-        this.pos.x = 29.5;
-        this.pos.y = 29.5;
-    }
-}
+
 
 export function ShowDialogueBox(text){
     if(!game.dialogueBoxShown){
