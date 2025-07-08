@@ -1,5 +1,7 @@
-var game = {  
-    disallowMovement: false, 
+var game = {
+    vw: 8,
+    vh:4,
+    disallowMovement: false,
     acceptPressed:false,
     declinePressed:false,
     playerXCoord : 0,

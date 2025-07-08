@@ -27,18 +27,18 @@ export class UIContainer extends me.UIBaseElement {
         // panel can be dragged
         this.isDraggable = dragable;
     };
-   
+
 };
 
 export class ButtonUI extends me.UISpriteElement {
-    //simplified version of buttonui from the example. removed usage of multiple sprites for ease of mind    
+    //simplified version of buttonui from the example. removed usage of multiple sprites for ease of mind
     constructor(x,y,pic,/*label,*/onclick,onrelease){
          super(x, y, {
-            image: game.UITextureAtlas,   
-            region: pic         
+            image: game.UITextureAtlas,
+            region: pic
         });
-        
-        // offset of the two used images in the texture        
+
+        // offset of the two used images in the texture
         this.clickEvent = onclick;
         this.releaseEvent = onrelease;
         this.anchorPoint.set(0, 0);
@@ -75,7 +75,7 @@ export class ButtonUI extends me.UISpriteElement {
     /**
      * function called when the object is clicked on
      */
-    onClick() {        
+    onClick() {
         this.clickEvent();
         return false;
     }
@@ -83,7 +83,7 @@ export class ButtonUI extends me.UISpriteElement {
     /**
      * function called when the pointer button is released
      */
-    onRelease(/* event */) {       
+    onRelease(/* event */) {
         if(this.releaseEvent != undefined){
             this.releaseEvent();
         }
@@ -106,7 +106,7 @@ export class ButtonUI extends me.UISpriteElement {
         this.font.destroy();
         this.font = null;
     }
-    
+
 };
 export class CheckBoxUI extends me.UISpriteElement {
     /**
@@ -213,9 +213,10 @@ export class CheckBoxUI extends me.UISpriteElement {
     }
 };
 
-
 export function ShowDialogueBox(inputJson){
     if(!game.dialogueBoxShown){
+        let vw = game.vw;
+        let vh = game.vh;
         game.dialogueBoxShown = true;
         console.log("showing dialogue box");
         game.disallowMovement = true;
@@ -227,9 +228,12 @@ export function ShowDialogueBox(inputJson){
         )
         console.log(game.talkingSpriteAtlas)
         let panel = new UIContainer(0,0,1,1,game.UITextureAtlas,"transparent");
-        panel.addChild(new UIContainer(250,30,256,256,game.talkingSpriteAtlas,"normal"));
-        panel.addChild(new UIContainer(100, 280, 600, 120,game.UITextureAtlas,"whitebox"));      
-        panel.addChild(new me.Text(100,250,{ 
+        panel.addChild(new me.Sprite(vw*65,vh*7,{
+            image : game.talkingSpriteAtlas,
+            region : "normal",
+            }));
+        panel.addChild(new UIContainer(vw*5, vh*70, vw*90, vh*30,game.UITextureAtlas,"whitebox"));
+        panel.addChild(new me.Text(vw*7,vh*62,{
             font:"sansserif",
             size: 40,
             fillStyle: "black",
@@ -237,12 +241,12 @@ export function ShowDialogueBox(inputJson){
             textBaseline: "top",
             bold: true,
             text: json.name}))
-        panel.addChild(new me.Text(120,300,{ 
+        panel.addChild(new me.Text(vw*6.5,vh*73,{
             font:"sansserif",
             size: 18,
             fillStyle: "black",
             textAlign: "left",
-            textBaseline: "top",            
+            textBaseline: "top",
             text: json.dialogue[0][0]}));
         // add the panel to word (root) container
         me.game.world.addChild(panel, 16);
