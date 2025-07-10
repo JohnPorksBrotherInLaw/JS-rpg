@@ -214,18 +214,21 @@ export class CheckBoxUI extends me.UISpriteElement {
         );
     }
 };
-//rewrite this
-function findit(atlas){
-    return game.currentDialogueSequence.dialogue[game.currentDialogueFrame].ts === atlas.activeAtlas;
+//custom find function
+function findit(a,b,LENGTH){
+    for (let i = 0; i < LENGTH; i++) {        
+        if(a.ts === b[i].activeAtlas)
+            return b[i].activeAtlas;
+    }   
 }
 
 //this needs to be a class so that i can reference the uielements directly.
 export class DialogueGUI {
-    constructor(json){
+    constructor(jsonname){
         console.log("showing dialogue box");
         //game.disallowMovement = true;
         //get the json that the textbox is referencing and obtain the text
-        this.currentDialogueSequence = me.loader.getJSON(json);
+        this.currentDialogueSequence = me.loader.getJSON(jsonname);
         this.currentDialogueFrame = 0;
         this.nextchar = false;//use left or right char to display talkingspite?
         //get all associated data
@@ -243,13 +246,7 @@ export class DialogueGUI {
         this.panel = new UIContainer(0,0,1,1,game.UITextureAtlas,"transparent");
         //the right character
         this.rchar = this.panel.addChild(new me.Sprite(vw*65,vh*7,{
-            image : function() {
-                //custom find function. match ts with its gotten dependancy
-                for(let i = 0; i < this.talkingSpriteAtlases.length; i++){
-                    if(this.currentDialogueSequence[this.currentDialogueFrame].ts === this.talkingSpriteAtlases[i].activeAtlas)
-                        return this.talkingSpriteAtlases[i].activeAtlas;
-                }                
-            },
+            image : findit(this.currentDialogueSequence.dialogue[this.currentDialogueFrame],this.talkingSpriteAtlases,this.talkingSpriteAtlases.length),
             region : this.currentDialogueSequence.dialogue[0].r,
         }));
         //the left character (create, but leave as transparent)
@@ -261,12 +258,7 @@ export class DialogueGUI {
         this.textbkg = this.panel.addChild(new UIContainer(vw*5, vh*70, vw*90, vh*30,game.UITextureAtlas,"whitebox"));
         //charcter name sprite
         this.namepanel = this.panel.addChild(new me.Sprite(vw*7,vh*52,{
-            image : function() {                
-                for(let i = 0; i < this.talkingSpriteAtlases.length; i++){
-                    if(this.currentDialogueSequence[this.currentDialogueFrame].ts === this.talkingSpriteAtlases[i].activeAtlas)
-                        return this.talkingSpriteAtlases[i].activeAtlas;
-                }                
-            },
+            image : findit(this.currentDialogueSequence.dialogue[this.currentDialogueFrame],this.talkingSpriteAtlases,this.talkingSpriteAtlases.length),
             region : "name"
         }));
         this.text = this.panel.addChild(new me.Text(vw*6.5,vh*73,{
@@ -277,7 +269,7 @@ export class DialogueGUI {
             textBaseline: "top",
             text: this.currentDialogueSequence.dialogue[0].t}));
         // add the panel to world (root) container
-        //me.game.world.addChild(this.panel, 16);
+        me.game.world.addChild(this.panel, 16);
     }
     Advance(){
         this.currentDialogueFrame++;

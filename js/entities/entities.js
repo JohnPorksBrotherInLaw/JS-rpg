@@ -27,12 +27,12 @@ export class PlayerEntity extends me.Sprite {
         // set the display around our position
         me.game.viewport.follow(this, me.game.viewport.AXIS.BOTH);
 
-        this.doAccept = function(){
-            if(game.currentInteractableNPC !== ""){
-                if(game.currentDialogueSequence === null){
-                    GUI.ShowDialogueBox(game.currentInteractableNPC);
+        this.doAccept = function(){            
+            if(game.currentInteractableNPC !== ""){                
+                if(game.currentDialogueSequence === undefined){                   
+                    game.DialogueGUI = new GUI.DialogueGUI(game.currentInteractableNPC);
                 }else{
-                    GUI.AdvanceDialougeSequence();
+                    game.DialogueGUI.AdvanceDialougeSequence();
                 }
             }
         };
@@ -174,16 +174,14 @@ export class NPCEntity extends me.Sprite{
             let newx = game.playerXCoord - this.pos.x;
             let newy = game.playerYCoord - this.pos.y;
 
-            if(game.currentDialogueSequence === null){
+            
                 if(Math.sqrt(newx * newx + newy * newy) < this.interactradius){
                     //GUI.ShowDialogueBox("testMap-npc0");
                     game.currentInteractableNPC = "testMap-npc0";
                 }else{
                     game.currentInteractableNPC = "";
                 }
-            }else{
-                //GUI.AdvanceDialougeSequence();
-            }
+           
 
         super.update(dt);
     }
