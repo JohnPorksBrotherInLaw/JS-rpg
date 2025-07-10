@@ -1,6 +1,8 @@
 import * as me from 'melonjs';
 import game from "../game.js";
 
+const vw = game.vw;
+const vh = game.vh;
 // a Panel type container
 export class UIContainer extends me.UIBaseElement {
 
@@ -212,43 +214,101 @@ export class CheckBoxUI extends me.UISpriteElement {
         );
     }
 };
+//rewrite this
+function findit(atlas){
+    return game.currentDialogueSequence.dialogue[game.currentDialogueFrame].ts === atlas.activeAtlas;
+}
 
-export function ShowDialogueBox(inputJson){
-    if(!game.dialogueBoxShown){
-        let vw = game.vw;
-        let vh = game.vh;
-        game.dialogueBoxShown = true;
+//this needs to be a class so that i can reference the uielements directly.
+export class DialogueGUI {
+    constructor(json){
         console.log("showing dialogue box");
-        game.disallowMovement = true;
+        //game.disallowMovement = true;
         //get the json that the textbox is referencing and obtain the text
-        const json = me.loader.getJSON(inputJson);
-        game.talkingSpriteAtlas = new me.TextureAtlas(
-           // me.loader.getImage(json.talkingSprite),
-            me.loader.getJSON(json.talkingSpriteJson)
-        )
-        console.log(game.talkingSpriteAtlas)
-        let panel = new UIContainer(0,0,1,1,game.UITextureAtlas,"transparent");
-        panel.addChild(new me.Sprite(vw*65,vh*7,{
-            image : game.talkingSpriteAtlas,
-            region : "normal",
-            }));
-        panel.addChild(new UIContainer(vw*5, vh*70, vw*90, vh*30,game.UITextureAtlas,"whitebox"));
-        panel.addChild(new me.Text(vw*7,vh*62,{
-            font:"sansserif",
-            size: 40,
-            fillStyle: "black",
-            textAlign: "left",
-            textBaseline: "top",
-            bold: true,
-            text: json.name}))
-        panel.addChild(new me.Text(vw*6.5,vh*73,{
+        this.currentDialogueSequence = me.loader.getJSON(json);
+        this.currentDialogueFrame = 0;
+        this.nextchar = false;//use left or right char to display talkingspite?
+        //get all associated data
+
+        this.talkingSpriteAtlases = []; //talking sprite atlases
+        for (let i = 0; i < this.currentDialogueSequence.talkingSpriteJsons.length; i++){
+            this.talkingSpriteAtlases.push(new me.TextureAtlas(
+                // me.loader.getImage(json.talkingSprite),
+                me.loader.getJSON(this.currentDialogueSequence.talkingSpriteJsons[i])
+            ));
+        }
+
+        // t means text, ts means talking sprite, r means region
+        //empty holder object
+        this.panel = new UIContainer(0,0,1,1,game.UITextureAtlas,"transparent");
+        //the right character
+        this.rchar = this.panel.addChild(new me.Sprite(vw*65,vh*7,{
+            image : function() {
+                //custom find function. match ts with its gotten dependancy
+                for(let i = 0; i < this.talkingSpriteAtlases.length; i++){
+                    if(this.currentDialogueSequence[this.currentDialogueFrame].ts === this.talkingSpriteAtlases[i].activeAtlas)
+                        return this.talkingSpriteAtlases[i].activeAtlas;
+                }                
+            },
+            region : this.currentDialogueSequence.dialogue[0].r,
+        }));
+        //the left character (create, but leave as transparent)
+        this.lchar = this.panel.addChild(new me.Sprite(vw*15,vh*7,{
+            image : game.UITextureAtlas,
+            region : "transparent",
+        }));
+        //textbox
+        this.textbkg = this.panel.addChild(new UIContainer(vw*5, vh*70, vw*90, vh*30,game.UITextureAtlas,"whitebox"));
+        //charcter name sprite
+        this.namepanel = this.panel.addChild(new me.Sprite(vw*7,vh*52,{
+            image : function() {                
+                for(let i = 0; i < this.talkingSpriteAtlases.length; i++){
+                    if(this.currentDialogueSequence[this.currentDialogueFrame].ts === this.talkingSpriteAtlases[i].activeAtlas)
+                        return this.talkingSpriteAtlases[i].activeAtlas;
+                }                
+            },
+            region : "name"
+        }));
+        this.text = this.panel.addChild(new me.Text(vw*6.5,vh*73,{
             font:"sansserif",
             size: 18,
             fillStyle: "black",
             textAlign: "left",
             textBaseline: "top",
-            text: json.dialogue[0][0]}));
-        // add the panel to word (root) container
-        me.game.world.addChild(panel, 16);
+            text: this.currentDialogueSequence.dialogue[0].t}));
+        // add the panel to world (root) container
+        //me.game.world.addChild(this.panel, 16);
+    }
+    Advance(){
+        this.currentDialogueFrame++;
+        if(this.currentDialogueSequence.dialogue.length === this.currentDialogueFrame){
+            //end dialogue
+        } else{
+            const f = this.currentDialogueSequence.dialogue[this.currentDialogueFrame];//f for frame
+            console.log(f);
+            this.text.text = f.t;
+            //check which ts is on the frame. if neither dialoguecharacter is has that ts,
+            //then replace the previously used dc with the new one and alter the name from there
+            if(this.rchar.image === f.ts){
+                this.rchar.region = f.r;//edit their stance
+                this.nextchar = false;//set the opposite char to be the one to be swapped if necessary
+            } else if(this.lchar.image === f.ts)  {
+                this.lchar.region = f.r;
+                this.nextchar = true;
+            }  else {
+                //edit previous unused ts. similar to cookie run kingdom
+                if(this.nextchar){
+                    //use rchar
+                    this.rchar.image = f.ts;
+                    this.rchar.region = f.r;
+                    this.nextchar = false;
+                }else{
+                    //use lchar
+                    this.lchar.iamge = f.ts;
+                    this.lchar.region = f.r;
+                    this.nextchar = true;
+                }
+            }
+        }
     }
 }

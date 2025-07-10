@@ -14,10 +14,11 @@ export class PlayerEntity extends me.Sprite {
                 frameheight: 32
             }, settings)
         );
+        this.acceptpressed = false;//stop these mf events from calling repeatedly
+        this.declinepressed = false;
 
         // add a physic body with a rect as a body shape
-       
-        this.body = new me.Body(this, (new me.Rect(16, 16, 16, 16)));        
+        this.body = new me.Body(this, (new me.Rect(16, 16, 16, 16)));
         // walking & jumping speed
         this.body.setMaxVelocity(2.5, 2.5);
         this.body.setFriction(0.4,0.4);
@@ -26,14 +27,40 @@ export class PlayerEntity extends me.Sprite {
         // set the display around our position
         me.game.viewport.follow(this, me.game.viewport.AXIS.BOTH);
 
+        this.doAccept = function(){
+            if(game.currentInteractableNPC !== ""){
+                if(game.currentDialogueSequence === null){
+                    GUI.ShowDialogueBox(game.currentInteractableNPC);
+                }else{
+                    GUI.AdvanceDialougeSequence();
+                }
+            }
+        };
+        this.doDecline = function(){
+
+        };
         // enable keyboard
        // if(game.isTouchDevice){
             me.input.bindKey(me.input.KEY.LEFT,  "left");
             me.input.bindKey(me.input.KEY.RIGHT, "right");
             me.input.bindKey(me.input.KEY.UP,    "up");
             me.input.bindKey(me.input.KEY.DOWN,  "down");
-            me.input.bindKey(me.input.KEY.Z, "accept");
-            me.input.bindKey(me.input.KEY.X, "decline");
+            me.input.bindKey(me.input.KEY.Z, "accept",true);
+            me.input.bindKey(me.input.KEY.X, "decline",true);
+            me.event.on(me.event.KEYDOWN, (action, keyCode, edge) => {
+              if (action === "accept" && this.acceptpressed === false) {
+                  this.doAccept();
+                  this.acceptpressed = true;
+              }
+              else if (action === "decline" && this.declinepressed === false) {
+                  this.doDecline();
+                  this.declinepressed = true;
+              }
+            });
+            me.event.on(me.event.KEYUP,(action,keyCode) => {
+                if(action === "accept") this.acceptpressed = false;
+                else if(action === "decline") this.declinepressed = false;
+            });
         //}
         // define an additional basic walking animation
         this.addAnimation("walk_left",  [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]);
@@ -43,9 +70,9 @@ export class PlayerEntity extends me.Sprite {
         // set default one
         this.setCurrentAnimation("walk_down");
     }
-    
-    update(dt) {        
-        if(!game.disallowMovement){            
+
+    update(dt) {
+        if(!game.disallowMovement){
             if (me.input.isKeyPressed("left")) {
                 // update the entity velocity
                 this.body.force.x = -this.body.maxVel.x;
@@ -76,10 +103,11 @@ export class PlayerEntity extends me.Sprite {
             } else {
                 this.body.force.y = 0;
             }
-        }          
-            
+        }
+
         //}
-        //instead of having a public static playerreference which is fucking impossible for some reason, ill just upload the x and y coords to game instead
+        //instead of having a public static playerreference which is fucking impossible for some reason
+        //ill just upload the x and y coords to game instead
         game.playerXCoord = this.pos.x;
         game.playerYCoord = this.pos.y;
         //console.log(this.pos);
@@ -93,8 +121,6 @@ export class PlayerEntity extends me.Sprite {
         if(!game.disallowMovement){
         let dir = new me.Vector2d(event.gameWorldX - this.pos.x,event.gameWorldY - this.pos.y).normalize();
         const angle = Math.atan2(dir.y,dir.x);
-               
-                    
         this.body.force.x = dir.x * this.body.maxVel.x;
         this.body.force.y = dir.y * this.body.maxVel.y;
                 //pi * 0.25 = 0.78539816339744830961566084581988
@@ -113,8 +139,8 @@ export class PlayerEntity extends me.Sprite {
                     }
                 }else if (!this.isCurrentAnimation("walk_down")) {
                     this.setCurrentAnimation("walk_down");
-                }                             
-            }    
+                }
+            }
     }
     /**
      * colision handler
@@ -124,34 +150,41 @@ export class PlayerEntity extends me.Sprite {
         // Make all other objects solid
         return true;
     }
+
 }
 
 //things you can interact and talk to like in rpgmaker
 export class NPCEntity extends me.Sprite{
-    
+
     constructor(x,y,settings){
          // call the constructor
         super(x, y,
             Object.assign({
                 image: "npc0",
                 framewidth: 32,
-                frameheight: 32,                                          
+                frameheight: 32,
             }, settings)
-        );        
-        this.interactradius = 64;         
-        this.body = new me.Body(this, (new me.Rect(16, 16, 16, 16)));        
+        );
+        this.interactradius = 64;
+        this.body = new me.Body(this, (new me.Rect(16, 16, 16, 16)));
     }
-    
-    update(dt){        
-            //see if the character is close enough to interact       
+
+    update(dt){
+            //see if the character is close enough to interact
             let newx = game.playerXCoord - this.pos.x;
             let newy = game.playerYCoord - this.pos.y;
-            if(Math.sqrt(newx * newx + newy * newy) < this.interactradius){                
-                if(game.acceptPressed || me.input.isKeyPressed("accept")){
-                    GUI.ShowDialogueBox("testMap-npc0");                   
+
+            if(game.currentDialogueSequence === null){
+                if(Math.sqrt(newx * newx + newy * newy) < this.interactradius){
+                    //GUI.ShowDialogueBox("testMap-npc0");
+                    game.currentInteractableNPC = "testMap-npc0";
+                }else{
+                    game.currentInteractableNPC = "";
                 }
-            }    
-                   
+            }else{
+                //GUI.AdvanceDialougeSequence();
+            }
+
         super.update(dt);
     }
 }

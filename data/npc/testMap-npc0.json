@@ -1,16 +1,20 @@
 {
-    "name" : "Spooki",
-    "talkingSprite" : "npc0talkingSprite",
-    "talkingSpriteJson" : "npc0talkingSpriteJson",
+    "talkingSpriteJsons" : ["npc0TalkingSpriteJson","playerTalkingSpriteJson"],
     "dialogue" : [
-        [
-            "What do *you* want",
-            "Spooki"
-        ],
-        "It's nice weather today, isn't it?",
-        [
-            "It sure is! Have a nice day!",
-            "MC"
-        ]
-    ]    
+        {
+            "t" : "What do *you* want",
+            "ts" : "npc0TalkingSprite",
+            "r" : "normal"
+        },
+        {
+            "t" : "Nothing much. I was just wondering how you were.",
+            "ts" : "playerTalkingSprite",
+            "r" : "normal"
+        },
+        {
+            "t" : "Oh... Well, in that case, I'm doing just fine, sir!",
+            "ts" : "npc0TalkingSprite",
+            "r" : "normal"
+        }
+    ]
 }

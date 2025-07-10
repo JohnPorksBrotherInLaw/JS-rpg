@@ -1,0 +1,31 @@
+{
+    "frames" : [
+        {
+            "filename": "normal",
+            "frame": {"x": 0, "y": 0,"w":140,"h":225},
+            "rotated": false,
+	        "trimmed": false,
+            "spriteSourceSize": {"x":0,"y":0,"w":140,"h":225},
+	        "sourceSize": {"w":140,"h":225},
+            "pivot": {"x":0,"y":0}
+        },
+        {
+            "filename": "name",
+            "frame": {"x": 142, "y": 0,"w":129,"h":70},
+            "rotated": false,
+	        "trimmed": false,
+            "spriteSourceSize": {"x":0,"y":0,"w":129,"h":70},
+	        "sourceSize": {"w":129,"h":70},
+            "pivot": {"x":0,"y":0}
+        }
+    ],
+    "meta": {
+        "app": "http://www.codeandweb.com/texturepacker",
+        "version": "1.0",
+	    "image": "playerTalkingSprite",
+	    "format": "RGBA8888",
+	    "size": {"w":512,"h":512},
+	    "scale": "1",
+        "smartupdate": "$TexturePacker:SmartUpdate:b28166e6a4cee359ec852c92cb7ddd12:9b74ecbd05a68429ea009da231f6aae1:507dbefcbb166b6309cf762e5cd0774c$"
+    }
+}

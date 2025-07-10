@@ -4,10 +4,13 @@ var resources = [
      * @example
      * { name: "example", type:"image", src: "data/img/example.png" },
      */
-    { name: "testTileMap",  type:"image", src: "data/img/testTileMap.png" },  
-   
-   
+    { name: "testTileMap",  type:"image", src: "data/img/testTileMap.png" },
+
+
     { name: "Blank_Sprite_Sheet", type:"image", src: "data/img/Blank_Sprite_Sheet_4_2_by_KnightYamato.png" },
+     {name:"playerTalkingSprite", type : "image", src : "data/img/playerTalkingSprite.png"},
+    {name:'playerTalkingSpriteJson',type:'json',src:'data/img/playerTalkingSprite.json'},
+
     {name:"UIAtlasImg", type:"image", src: "data/img/UIAtlas.png"},
     {name:'UIAtlasJson',type:'json',src:'data/img/UIAtlas.json'},
     /* Maps.
@@ -34,12 +37,12 @@ var resources = [
      * @example
      *{ name: "example_tps", type: "json", src: "data/img/example_tps.json" },
      */
-    { name: "npc0",  type:"image", src: "data/img/npc0.png" },  
+    { name: "npc0",  type:"image", src: "data/img/npc0.png" },
     {name:"testMap-npc0",type:"json", src:"data/npc/testMap-npc0.json"},
-     {name:"npc0talkingSprite", type : "image", src : "data/img/npc0-talkingSprite.png"},
-    {name:'npc0talkingSpriteJson',type:'json',src:'data/img/npc0-talkingSprite.json'},
+     {name:"npc0TalkingSprite", type : "image", src : "data/img/npc0TalkingSprite.png"},
+    {name:'npc0TalkingSpriteJson',type:'json',src:'data/img/npc0TalkingSprite.json'},
 
-    
+
 
 ];
 
