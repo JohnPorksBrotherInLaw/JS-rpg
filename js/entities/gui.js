@@ -218,7 +218,7 @@ export class CheckBoxUI extends me.UISpriteElement {
 function findit(a,b,LENGTH){
     for (let i = 0; i < LENGTH; i++) {        
         if(a.ts === b[i].activeAtlas)
-            return b[i].activeAtlas;
+            return b[i];
     }   
 }
 
@@ -230,6 +230,7 @@ export class DialogueGUI {
         //get the json that the textbox is referencing and obtain the text
         this.currentDialogueSequence = me.loader.getJSON(jsonname);
         this.currentDialogueFrame = 0;
+        this.lastTS = "";//ts of last frame
         this.nextchar = false;//use left or right char to display talkingspite?
         //get all associated data
 
@@ -248,26 +249,33 @@ export class DialogueGUI {
         this.rchar = this.panel.addChild(new me.Sprite(vw*65,vh*7,{
             image : findit(this.currentDialogueSequence.dialogue[this.currentDialogueFrame],this.talkingSpriteAtlases,this.talkingSpriteAtlases.length),
             region : this.currentDialogueSequence.dialogue[0].r,
+            name : "rchar"
         }));
-        //the left character (create, but leave as transparent)
+        this.lchar = null;
+        /*//the left character (create, but leave as transparent)
         this.lchar = this.panel.addChild(new me.Sprite(vw*15,vh*7,{
             image : game.UITextureAtlas,
             region : "transparent",
-        }));
+            name: "lchar"
+        }));*/
         //textbox
         this.textbkg = this.panel.addChild(new UIContainer(vw*5, vh*70, vw*90, vh*30,game.UITextureAtlas,"whitebox"));
         //charcter name sprite
+        
         this.namepanel = this.panel.addChild(new me.Sprite(vw*7,vh*52,{
-            image : findit(this.currentDialogueSequence.dialogue[this.currentDialogueFrame],this.talkingSpriteAtlases,this.talkingSpriteAtlases.length),
-            region : "name"
+            image : game.DialogueNamesTextureAtlas,
+            region : this.currentDialogueSequence.dialogue[0].ts,
+            name: "name"
         }));
-        this.text = this.panel.addChild(new me.Text(vw*6.5,vh*73,{
+        this.Text = this.panel.addChild(new me.Text(vw*6.5,vh*73,{
             font:"sansserif",
             size: 18,
             fillStyle: "black",
             textAlign: "left",
             textBaseline: "top",
-            text: this.currentDialogueSequence.dialogue[0].t}));
+            text: this.currentDialogueSequence.dialogue[0].t
+        }));
+        this.lastTS = this.currentDialogueSequence.dialogue[0].ts;
         // add the panel to world (root) container
         me.game.world.addChild(this.panel, 16);
     }
@@ -278,29 +286,71 @@ export class DialogueGUI {
         } else{
             const f = this.currentDialogueSequence.dialogue[this.currentDialogueFrame];//f for frame
             console.log(f);
-            this.text.text = f.t;
+            
+            this.Text.setText(f.t);            
             //check which ts is on the frame. if neither dialoguecharacter is has that ts,
             //then replace the previously used dc with the new one and alter the name from there
-            if(this.rchar.image === f.ts){
+            if(this.lchar === null){
+                this.lchar = this.panel.addChild(new me.Sprite(vw*15,vh*7,{
+                    image : findit(f,this.talkingSpriteAtlases,this.talkingSpriteAtlases.length),
+                    region : f.r,
+                    name : "lchar"
+                }),0);                
+                this.nextchar = true; 
+               // this.panel.moveToBottom(this.panel.getChildByName("lchar"));
+                //console.log(this.namepanel);
+                this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.ts));
+            }
+            if(this.rchar.source.activeAtlas === f.ts){
+                console.log("lorem");
                 this.rchar.region = f.r;//edit their stance
                 this.nextchar = false;//set the opposite char to be the one to be swapped if necessary
-            } else if(this.lchar.image === f.ts)  {
+                if(this.lastTS !== f.ts){
+                    //update name if itsn different than last time
+                   
+                     this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.ts)); 
+                }
+                console.log(this.rchar);
+            } else if(this.lchar.source.activeAtlas === f.ts)  {
+                console.log("ipsum");
                 this.lchar.region = f.r;
                 this.nextchar = true;
+                if(this.lastTS !== f.ts){
+                    //update name if its different than last time
+                   
+                     this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.ts));
+                }
             }  else {
                 //edit previous unused ts. similar to cookie run kingdom
                 if(this.nextchar){
                     //use rchar
-                    this.rchar.image = f.ts;
-                    this.rchar.region = f.r;
+                    console.log("dolor");
+                    //destroy rchar and recreate it. changing the textureatlas is against the rules
+                    this.rchar.destroy();
+                    this.rchar = this.panel.addChild(new me.Sprite(vw*65,vh*7,{
+                        image : findit(f,this.talkingSpriteAtlases,this.talkingSpriteAtlases.length),
+                        region : f.r,
+                        name : "rchar"
+                    }));                    
                     this.nextchar = false;
                 }else{
                     //use lchar
-                    this.lchar.iamge = f.ts;
-                    this.lchar.region = f.r;
-                    this.nextchar = true;
+                    console.log("sit");
+                    this.lchar.destroy();                    
+                    this.lchar = this.panel.addChild(new me.Sprite(vw*15,vh*7,{
+                        image : findit(f,this.talkingSpriteAtlases,this.talkingSpriteAtlases.length),
+                        region : f.r,
+                        name : "lchar"
+                    }));                
+                    this.nextchar = true;                   
                 }
+                
+                //update name if itsn different than last time
+                 this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.ts));
+                
             }
+            this.lastTS = f.ts;
         }
     }
 }
+/*Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.*/

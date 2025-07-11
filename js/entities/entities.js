@@ -29,10 +29,10 @@ export class PlayerEntity extends me.Sprite {
 
         this.doAccept = function(){            
             if(game.currentInteractableNPC !== ""){                
-                if(game.currentDialogueSequence === undefined){                   
+                if(game.DialogueGUI === null){                   
                     game.DialogueGUI = new GUI.DialogueGUI(game.currentInteractableNPC);
                 }else{
-                    game.DialogueGUI.AdvanceDialougeSequence();
+                    game.DialogueGUI.Advance();
                 }
             }
         };

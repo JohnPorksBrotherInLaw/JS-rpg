@@ -13,6 +13,8 @@ var resources = [
 
     {name:"UIAtlasImg", type:"image", src: "data/img/UIAtlas.png"},
     {name:'UIAtlasJson',type:'json',src:'data/img/UIAtlas.json'},
+    {name:"DialogueNames", type:"image", src: "data/img/DialogueNames.png"},
+    {name:'DialogueNamesJson',type:'json',src:'data/img/DialogueNames.json'},
     /* Maps.
      * @example
      * { name: "example01", type: "tmx", src: "data/map/example01.tmx" },

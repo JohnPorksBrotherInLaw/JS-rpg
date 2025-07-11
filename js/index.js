@@ -21,6 +21,11 @@ export default function onload() {
             me.loader.getJSON("UIAtlasJson"),
 
         ]);
+        game.DialogueNamesTextureAtlas = new me.TextureAtlas(
+            //me.loader.getImage("DialogueNames"),
+            me.loader.getJSON("DialogueNamesJson"),
+                    
+        );
         //console.log(game.UITextureAtlas)
         // register our objects entity in the object pool
         me.pool.register("mainPlayer", PlayerEntity);
