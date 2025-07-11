@@ -13,7 +13,8 @@ class PlayScreen extends me.Stage {
 
         // load a level
         me.level.load("testMap");
-
+        
+       
         // register on mouse event
         
        if(me.device.isMobile){
@@ -30,7 +31,7 @@ constructor(){
         console.log("initializing mobile control layout");
 
         //create some ui holder for my things (perhpas i dont need this)        
-        let panel = new GUI.UIContainer(0,0,1,1,game.UITextureAtlas,"transparent",false,false);
+        let panel = new GUI.UIContainer(0,0,1,1,game.UITextureAtlas,"transparent",false,false,"mobilecontrols");
 
         panel.addChild(new GUI.ButtonUI(700,270,"acceptbutton",() => {
             console.log("yes");

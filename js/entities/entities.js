@@ -13,9 +13,7 @@ export class PlayerEntity extends me.Sprite {
                 framewidth: 32,
                 frameheight: 32
             }, settings)
-        );
-        this.acceptpressed = false;//stop these mf events from calling repeatedly
-        this.declinepressed = false;
+        );        
 
         // add a physic body with a rect as a body shape
         this.body = new me.Body(this, (new me.Rect(16, 16, 16, 16)));
@@ -30,8 +28,10 @@ export class PlayerEntity extends me.Sprite {
         this.doAccept = function(){            
             if(game.currentInteractableNPC !== ""){                
                 if(game.DialogueGUI === null){                   
-                    game.DialogueGUI = new GUI.DialogueGUI(game.currentInteractableNPC);
+                    game.DialogueGUI = me.pool.pull("DialogueScreen");
+                   // console.log("nimue");
                 }else{
+             //       console.log(game.DialogueGUI);
                     game.DialogueGUI.Advance();
                 }
             }
@@ -48,18 +48,18 @@ export class PlayerEntity extends me.Sprite {
             me.input.bindKey(me.input.KEY.Z, "accept",true);
             me.input.bindKey(me.input.KEY.X, "decline",true);
             me.event.on(me.event.KEYDOWN, (action, keyCode, edge) => {
-              if (action === "accept" && this.acceptpressed === false) {
+              if (action === "accept" && game.acceptPressed === false) {
                   this.doAccept();
-                  this.acceptpressed = true;
+                  game.acceptPressed = true;
               }
-              else if (action === "decline" && this.declinepressed === false) {
+              else if (action === "decline" && game.declinePressed  === false) {
                   this.doDecline();
-                  this.declinepressed = true;
+                  game.declinePressed = true;
               }
             });
             me.event.on(me.event.KEYUP,(action,keyCode) => {
-                if(action === "accept") this.acceptpressed = false;
-                else if(action === "decline") this.declinepressed = false;
+                if(action === "accept") game.acceptPressed = false;
+                else if(action === "decline") game.declinePressed  = false;
             });
         //}
         // define an additional basic walking animation
@@ -71,7 +71,7 @@ export class PlayerEntity extends me.Sprite {
         this.setCurrentAnimation("walk_down");
     }
 
-    update(dt) {
+    update(dt) {        
         if(!game.disallowMovement){
             if (me.input.isKeyPressed("left")) {
                 // update the entity velocity

@@ -31,6 +31,10 @@ export default function onload() {
         me.pool.register("mainPlayer", PlayerEntity);
         me.pool.register("npc0", NPCEntity);
 
+        //pool dialogueGUI
+        me.pool.register("DialogueScreen",GUI.DialogueGUI,true);
+        me.pool.register("DialogueCharacter",me.Sprite);
+
         // set the "Play/Ingame" Screen Object
         me.state.set(me.state.PLAY, new PlayScreen());
         me.state.change(me.state.PLAY);

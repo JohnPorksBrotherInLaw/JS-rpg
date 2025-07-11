@@ -8,8 +8,7 @@ var game = {
     playerYCoord : 0,
     UITextureAtlas:null,
     DialogueNamesTextureAtlas:null,
-    DialogueGUI:null,//ref to the dialogue on screen
-    
+    DialogueGUI:null,//ref to the dialogue on screen    
     currentInteractableNPC:"",//the name of the JSON that will be activated on accept
 }
 export default game;
