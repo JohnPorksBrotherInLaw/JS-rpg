@@ -16,7 +16,7 @@ export class PlayerEntity extends me.Sprite {
         );        
 
         // add a physic body with a rect as a body shape
-        this.body = new me.Body(this, (new me.Rect(16, 16, 16, 16)));
+        this.body = new me.Body(this, (new me.Rect(0, 30, 23, 12)));
         // walking & jumping speed
         this.body.setMaxVelocity(2.5, 2.5);
         this.body.setFriction(0.4,0.4);
