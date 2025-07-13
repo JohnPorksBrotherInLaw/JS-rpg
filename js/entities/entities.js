@@ -9,9 +9,9 @@ export class PlayerEntity extends me.Sprite {
         // call the constructor
         super(x, y,
             Object.assign({
-                image: "Blank_Sprite_Sheet",
-                framewidth: 32,
-                frameheight: 32
+                image: "player",
+                framewidth: 23,
+                frameheight: 42
             }, settings)
         );        
 
@@ -37,10 +37,9 @@ export class PlayerEntity extends me.Sprite {
             }
         };
         this.doDecline = function(){
-
+            this.body.setMaxVelocity(5, 5);
         };
-        // enable keyboard
-       // if(game.isTouchDevice){
+        // enable keyboard       
             me.input.bindKey(me.input.KEY.LEFT,  "left");
             me.input.bindKey(me.input.KEY.RIGHT, "right");
             me.input.bindKey(me.input.KEY.UP,    "up");
@@ -59,20 +58,26 @@ export class PlayerEntity extends me.Sprite {
             });
             me.event.on(me.event.KEYUP,(action,keyCode) => {
                 if(action === "accept") game.acceptPressed = false;
-                else if(action === "decline") game.declinePressed  = false;
+                else if(action === "decline"){
+                     game.declinePressed  = false;
+                     this.body.setMaxVelocity(2.5, 2.5);
+                }
             });
-        //}
-        // define an additional basic walking animation
-        this.addAnimation("walk_left",  [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]);
-        this.addAnimation("walk_right", [24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]);
-        this.addAnimation("walk_up",    [36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47]);
-        this.addAnimation("walk_down",  [0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11]);
+        
+        // define walking animations
+        this.addAnimation("walk_left",[6,7,6,8],150);
+
+        //i had errors with this line and i had to make the spritesheet one row bigger than it needs to be to patch it
+        this.addAnimation("walk_right",[9,10,9,11],150);
+
+        this.addAnimation("walk_up",[3,4,3,5],150);
+        this.addAnimation("walk_down",[0,1,0,2],150);
         // set default one
         this.setCurrentAnimation("walk_down");
     }
 
     update(dt) {        
-        if(!game.disallowMovement){
+        if(!game.disallowMovement){            
             if (me.input.isKeyPressed("left")) {
                 // update the entity velocity
                 this.body.force.x = -this.body.maxVel.x;

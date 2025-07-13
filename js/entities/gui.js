@@ -302,64 +302,66 @@ export class DialogueGUI extends UIContainer{
             this.Text.setText(f.t);            
             //check which ts is on the frame. if neither dialoguecharacter is has that ts,
             //then replace the previously used dc with the new one and alter the name from there
-            if(this.lastTS !== f.ts){
-                if(this.lchar === null){
-              //      console.log("amet");
-                    this.lchar = this.addChild(me.pool.pull("DialogueCharacter",vw*20,vh*70,{
-                        image : findit(f,this.talkingSpriteAtlases,this.talkingSpriteAtlases.length),
-                        region : f.r,
-                        name : "lchar",
-                        anchorPoint : new me.Vector2d(0.5,1)
-                    }),0);                
-                    this.nextchar = true; 
-                // this.panel.moveToBottom(this.panel.getChildByName("lchar"));
-                    //console.log(this.namepanel);
-                    this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.ts));
-                } else if(this.rchar.source.activeAtlas === f.ts){
-              //  console.log("lorem");
-                    this.rchar.region = f.r;//edit their stance
-                    this.nextchar = false;//set the opposite char to be the one to be swapped if necessary
-                    if(this.lastTS !== f.ts){
-                        //update name if itsn different than last time                   
-                        this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.ts)); 
-                    }
-                //  console.log(this.rchar);
-                } else if(this.lchar.source.activeAtlas === f.ts)  {
-              //   console.log("ipsum");
-                    this.lchar.region = f.r;
-                    this.nextchar = true;
-                    if(this.lastTS !== f.ts){
-                        //update name if its different than last time                   
-                        this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.ts));
-                    }
-                }  else {
-                    //edit previous unused ts. similar to cookie run kingdom
-                    if(this.nextchar){
-                        //use rchar
-                    //    console.log("dolor");
-                        //destroy rchar and recreate it. changing the textureatlas is against the rules
-                        this.rchar.destroy();
-                        this.rchar = this.addChild(new me.Sprite(vw*65,vh*7,{
-                            image : findit(f,this.talkingSpriteAtlases,this.talkingSpriteAtlases.length),
-                            region : f.r,
-                            name : "rchar",
-                        anchorPoint : new me.Vector2d(0.5,1)
-                        }));                    
-                        this.nextchar = false;
-                    }else{
-                        //use lchar
-                   // console.log("sit");
-                        this.lchar.destroy();                    
-                        this.lchar = this.addChild(new me.Sprite(vw*15,vh*7,{
+            if(f.ts !== undefined){//you can leave ts as undefined if the same character talks twice in a row
+                if(this.lastTS !== f.ts){
+                    if(this.lchar === null){
+                //      console.log("amet");
+                        this.lchar = this.addChild(me.pool.pull("DialogueCharacter",vw*20,vh*70,{
                             image : findit(f,this.talkingSpriteAtlases,this.talkingSpriteAtlases.length),
                             region : f.r,
                             name : "lchar",
-                        anchorPoint : new me.Vector2d(0.5,1)
-                        }));                
-                        this.nextchar = true;                   
-                    }                
-                    //update name if itsn different than last time
-                    this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.ts));                
+                            anchorPoint : new me.Vector2d(0.5,1)
+                        }),0);                
+                        this.nextchar = true; 
+                    // this.panel.moveToBottom(this.panel.getChildByName("lchar"));
+                        //console.log(this.namepanel);
+                        this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.ts));
+                    } else if(this.rchar.source.activeAtlas === f.ts){
+                //  console.log("lorem");
+                        this.rchar.region = f.r;//edit their stance
+                        this.nextchar = false;//set the opposite char to be the one to be swapped if necessary
+                        if(this.lastTS !== f.ts){
+                            //update name if itsn different than last time                   
+                            this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.ts)); 
+                        }
+                    //  console.log(this.rchar);
+                    } else if(this.lchar.source.activeAtlas === f.ts)  {
+                //   console.log("ipsum");
+                        this.lchar.region = f.r;
+                        this.nextchar = true;
+                        if(this.lastTS !== f.ts){
+                            //update name if its different than last time                   
+                            this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.ts));
+                        }
+                    }  else {
+                        //edit previous unused ts. similar to cookie run kingdom
+                        if(this.nextchar){
+                            //use rchar
+                        //    console.log("dolor");
+                            //destroy rchar and recreate it. changing the textureatlas is against the rules
+                            this.removeChild(this.rchar);
+                            this.rchar = this.addChild(me.pool.pull("DialogueCharacter",w*65,vh*7,{
+                                image : findit(f,this.talkingSpriteAtlases,this.talkingSpriteAtlases.length),
+                                region : f.r,
+                                name : "rchar",
+                            anchorPoint : new me.Vector2d(0.5,1)
+                            }));                    
+                            this.nextchar = false;
+                        }else{
+                            //use lchar
+                    // console.log("sit");
+                            this.removeChild(this.lchar);                 
+                            this.lchar = this.addChild(me.pool.pull("DialogueCharacter",vw*15,vh*7,{
+                                image : findit(f,this.talkingSpriteAtlases,this.talkingSpriteAtlases.length),
+                                region : f.r,
+                                name : "lchar",
+                            anchorPoint : new me.Vector2d(0.5,1)
+                            }));                
+                            this.nextchar = true;                   
+                        }                
+                        //update name if itsn different than last time
+                        this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.ts));                
+                    }
                 }
             }
             this.lastTS = f.ts;

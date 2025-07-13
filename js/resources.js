@@ -7,7 +7,8 @@ var resources = [
     { name: "testTileMap",  type:"image", src: "data/img/testTileMap.png" },
 
 
-    { name: "Blank_Sprite_Sheet", type:"image", src: "data/img/Blank_Sprite_Sheet_4_2_by_KnightYamato.png" },
+    //{ name: "Blank_Sprite_Sheet", type:"image", src: "data/img/Blank_Sprite_Sheet_4_2_by_KnightYamato.png" },
+    {name:"player", type : "image", src : "data/img/player.png"},
      {name:"playerTalkingSprite", type : "image", src : "data/img/playerTalkingSprite.png"},
     {name:'playerTalkingSpriteJson',type:'json',src:'data/img/playerTalkingSprite.json'},
 
