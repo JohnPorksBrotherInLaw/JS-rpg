@@ -12,7 +12,7 @@ class PlayScreen extends me.Stage {
         me.game.world.gravity.set(0, 0);
 
         // load a level
-        me.level.load("testMap");
+        me.level.load("floor1");
         
        
         // register on mouse event
@@ -45,7 +45,7 @@ constructor(){
             game.declinePressed = true;         
         }, () => {
             game.declinePressed = false;         
-        }));          
+        }));        
         
         me.game.world.addChild(panel, 10);
    };

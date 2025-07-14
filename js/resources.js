@@ -21,8 +21,8 @@ var resources = [
      * { name: "example01", type: "tmx", src: "data/map/example01.tmx" },
      * { name: "example01", type: "tmx", src: "data/map/example01.json" },
       */
-    { name: "testMap", type: "tmx", src: "data/map/testMap.tmx" },
-
+    //{ name: "testMap", type: "tmx", src: "data/map/testMap.tmx" },
+    { name: "floor1", type: "tmx", src: "data/map/floor1.tmx" },
     /* Background music.
      * @example
      * { name: "example_bgm", type: "audio", src: "data/bgm/" },
