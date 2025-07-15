@@ -1,5 +1,6 @@
 import * as me from 'melonjs';
 import * as GUI from '../entities/gui.js';
+import * as Ent from '../entities/entities.js';
 import game from '../game.js';
 class PlayScreen extends me.Stage {
 
@@ -11,10 +12,14 @@ class PlayScreen extends me.Stage {
         // disable gravity
         me.game.world.gravity.set(0, 0);
 
+        //init doors
+        //set these all manually. Check what the values shld be in tiled then post them here
+        me.pool.register("DOOR_Gym",Ent.Door,1204.96,1120.24,4040.0,1151.5,'l');
+        me.pool.register("DOOR_GymHallway",Ent.Door,4040.0,1151.5,1204.96,1120.24,"r");
+
         // load a level
         me.level.load("floor1");
         
-       
         // register on mouse event
         
        if(me.device.isMobile){

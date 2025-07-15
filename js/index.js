@@ -1,7 +1,7 @@
 import * as me from 'melonjs';
 import resources from './resources.js';
 import PlayScreen from './screens/play.js';
-import { NPCEntity, PlayerEntity } from './entities/entities.js';
+import * as Ent from './entities/entities.js';
 import * as GUI from './entities/gui.js';
 import game from './game.js';
 
@@ -28,8 +28,8 @@ export default function onload() {
         );
         //console.log(game.UITextureAtlas)
         // register our objects entity in the object pool
-        me.pool.register("mainPlayer", PlayerEntity);
-        me.pool.register("npc0", NPCEntity);
+        me.pool.register("mainPlayer", Ent.PlayerEntity);
+        
 
         //pool dialogueGUI
         me.pool.register("DialogueScreen",GUI.DialogueGUI,true);

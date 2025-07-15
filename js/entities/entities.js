@@ -26,13 +26,20 @@ export class PlayerEntity extends me.Sprite {
         me.game.viewport.follow(this, me.game.viewport.AXIS.BOTH);
 
         this.doAccept = function(){            
-            if(game.currentInteractableNPC !== ""){                
-                if(game.DialogueGUI === null){                   
-                    game.DialogueGUI = me.pool.pull("DialogueScreen");
-                   // console.log("nimue");
-                }else{
-             //       console.log(game.DialogueGUI);
-                    game.DialogueGUI.Advance();
+            if(game.currentInteractableNPC !== ""){  
+                const t = game.currentInteractableNPC.split("_");
+                if(t[0] === "TALK")  {        
+                    if(game.DialogueGUI === null){                   
+                        game.DialogueGUI = me.pool.pull("DialogueScreen");
+                    // console.log("nimue");
+                    }else{
+                //       console.log(game.DialogueGUI);
+                        game.DialogueGUI.Advance();
+                    }
+                }else if (t[0]=== "DOOR") {
+                    console.log(game.ExitXCoord);
+                    this.pos.x = game.ExitXCoord.exitXCoord;
+                    this.pos.y = game.ExitXCoord.exitYCoord;
                 }
             }
         };
@@ -161,11 +168,11 @@ export class PlayerEntity extends me.Sprite {
 //things you can interact and talk to like in rpgmaker
 export class NPCEntity extends me.Sprite{
 
-    constructor(x,y,settings){
+    constructor(x,y,settings,Name,){
          // call the constructor
         super(x, y,
             Object.assign({
-                image: "npc0",
+                image: Name,
                 framewidth: 32,
                 frameheight: 32,
             }, settings)
@@ -175,19 +182,38 @@ export class NPCEntity extends me.Sprite{
     }
 
     update(dt){
-            //see if the character is close enough to interact
-            let newx = game.playerXCoord - this.pos.x;
-            let newy = game.playerYCoord - this.pos.y;
-
-            
-                if(Math.sqrt(newx * newx + newy * newy) < this.interactradius){
-                    //GUI.ShowDialogueBox("testMap-npc0");
-                    game.currentInteractableNPC = "testMap-npc0";
-                }else{
-                    game.currentInteractableNPC = "";
-                }
-           
-
+        //see if the character is close enough to interact
+        let newx = game.playerXCoord - this.pos.x;
+        let newy = game.playerYCoord - this.pos.y;            
+        if(Math.sqrt(newx * newx + newy * newy) < this.interactradius){             
+            game.currentInteractableNPC = "testMap-npc0";
+        }else{
+            game.currentInteractableNPC = "";
+        }
+        super.update(dt);
+    }
+}
+//interact with this 'npc' (image is baked in terrain) to travel to Exit
+export class Door extends me.Renderable{
+    constructor(x,y,ExitX,ExitY,Dir){
+        super(x,y,0,0);
+        this.interactradius = 64;        
+        this.exitx = ExitX;
+        this.exity = ExitY;
+        this.dir = Dir;
+    }
+    update(dt){
+        let newx = game.playerXCoord - this.pos.x;
+        let newy = game.playerYCoord - this.pos.y;            
+        if(Math.sqrt(newx * newx + newy * newy) < this.interactradius){   
+            console.log(this.exitXCoord);            
+            game.currentInteractableNPC = "DOOR_";
+            game.ExitXCoord = this.exitx;
+            game.ExitYCoord = this.exity;
+            game.ExitDir = this.dir;
+        }else{
+            game.currentInteractableNPC = "";
+        }         
         super.update(dt);
     }
 }
