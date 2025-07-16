@@ -12,11 +12,15 @@ class PlayScreen extends me.Stage {
         // disable gravity
         me.game.world.gravity.set(0, 0);
 
-        //init doors
-        //set these all manually. Check what the values shld be in tiled then post them here
-        me.pool.register("DOOR_Gym",Ent.Door,1204.96,1120.24,4040.0,1151.5,'l');
-        me.pool.register("DOOR_GymHallway",Ent.Door,4040.0,1151.5,1204.96,1120.24,"r");
-
+        //init doors   
+        me.pool.register("DOOR_Gym",Ent.Door,true);
+        me.pool.register("DOOR_GymHallway",Ent.Door,true);
+        me.pool.register("DOOR_ClassroomA",Ent.Door,true);
+        me.pool.register("DOOR_ClassroomAHallway",Ent.Door,true);
+        me.pool.register("DOOR_ClassroomB",Ent.Door,true);
+        me.pool.register("DOOR_ClassroomBHallway",Ent.Door,true);
+        me.pool.register("DOOR_ClassroomC",Ent.Door,true);
+        me.pool.register("DOOR_ClassroomCHallway",Ent.Door,true);
         // load a level
         me.level.load("floor1");
         

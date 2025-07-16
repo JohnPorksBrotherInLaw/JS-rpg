@@ -37,9 +37,9 @@ export class PlayerEntity extends me.Sprite {
                         game.DialogueGUI.Advance();
                     }
                 }else if (t[0]=== "DOOR") {
-                    console.log(game.ExitXCoord);
-                    this.pos.x = game.ExitXCoord.exitXCoord;
-                    this.pos.y = game.ExitXCoord.exitYCoord;
+                    //console.log(game.currentDoor);
+                    this.pos.x = game.currentDoor.exitXCoord;
+                    this.pos.y = game.currentDoor.exitYCoord;
                 }
             }
         };
@@ -195,22 +195,19 @@ export class NPCEntity extends me.Sprite{
 }
 //interact with this 'npc' (image is baked in terrain) to travel to Exit
 export class Door extends me.Renderable{
-    constructor(x,y,ExitX,ExitY,Dir){
+    constructor(x,y,a){
         super(x,y,0,0);
         this.interactradius = 64;        
-        this.exitx = ExitX;
-        this.exity = ExitY;
-        this.dir = Dir;
+        this.settings = a;        
+        //settings holds all the data passed from tiled into the class (NOT XYWH) use that to get exitcoords
     }
     update(dt){
         let newx = game.playerXCoord - this.pos.x;
         let newy = game.playerYCoord - this.pos.y;            
         if(Math.sqrt(newx * newx + newy * newy) < this.interactradius){   
-            console.log(this.exitXCoord);            
+           // console.log(this.settings);            
             game.currentInteractableNPC = "DOOR_";
-            game.ExitXCoord = this.exitx;
-            game.ExitYCoord = this.exity;
-            game.ExitDir = this.dir;
+            game.currentDoor = this.settings;
         }else{
             game.currentInteractableNPC = "";
         }         
