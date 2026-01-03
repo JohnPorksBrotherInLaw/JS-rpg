@@ -82,7 +82,7 @@ function acceptButtonPress(TX,TY){
         if(TY >= acceptButtonRect.top && TY < acceptButtonRect.top + acceptButtonRect.height){
             console.log("ok");
             game.acceptPressed = true;
-            game.playerRef.doAccept();
+            game.playerRef.AcceptDown();
             acceptButton.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
             acceptButton.style.border = "2px solid rgba(255, 255, 255, 0.8)";    
         }
@@ -99,7 +99,7 @@ function declineButtonPress(TX,TY){
         if(TY >= declineButtonRect.top && TY < declineButtonRect.top + declineButtonRect.height){   
             console.log("no good");         
             game.declinePressed = true;
-            game.playerRef.doDecline();
+            game.playerRef.DeclineDown();
             declineButton.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
             declineButton.style.border = "2px solid rgba(255, 255, 255, 0.8)";   
         }
