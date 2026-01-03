@@ -88,7 +88,12 @@ function acceptButtonPress(TX,TY){
         }
     }
 }
-
+function acceptButtonRelease() {
+    game.acceptPressed = false;    
+    game.playerRef.AcceptUp();
+    acceptButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+    acceptButton.style.border = "2px solid rgba(255, 255, 255, 0.5)";
+}
 function declineButtonPress(TX,TY){
     if(TX >= declineButtonRect.left && TX < declineButtonRect.left + declineButtonRect.width){
         if(TY >= declineButtonRect.top && TY < declineButtonRect.top + declineButtonRect.height){   
@@ -100,7 +105,13 @@ function declineButtonPress(TX,TY){
         }
     }
 }
-
+function declineButtonRelease() {
+    console.log("sprint stop");    
+    // IMPORTANT: Add a method to stop sprinting in your player class
+   game.playerRef.DelineUp();
+    declineButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+    declineButton.style.border = "2px solid rgba(255, 255, 255, 0.5)";
+}
 // Helper function to find which control area a touch is in
 function getControlForTouch(clientX, clientY) {
     // Check joystick area with leeway
@@ -177,15 +188,11 @@ MobileScreenControlsContainer.addEventListener('touchend', (e) => {
                     case 'joystick':
                         resetJoystick();
                         break;
-                    case 'accept':
-                        game.acceptPressed = false;
-                        acceptButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-                        acceptButton.style.border = "2px solid rgba(255, 255, 255, 0.5)";
+                     case 'accept':
+                        acceptButtonRelease();
                         break;
                     case 'decline':
-                        game.declinePressed = false;
-                        declineButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-                        declineButton.style.border = "2px solid rgba(255, 255, 255, 0.5)";
+                        declineButtonRelease();
                         break;
                 }
                 break;
@@ -210,14 +217,10 @@ MobileScreenControlsContainer.addEventListener('touchcancel', (e) => {
                         resetJoystick();
                         break;
                     case 'accept':
-                        game.acceptPressed = false;
-                        acceptButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-                        acceptButton.style.border = "2px solid rgba(255, 255, 255, 0.5)";
+                        acceptButtonRelease();
                         break;
                     case 'decline':
-                        game.declinePressed = false;
-                        declineButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-                        declineButton.style.border = "2px solid rgba(255, 255, 255, 0.5)";
+                        declineButtonRelease();
                         break;
                 }
                 break;
@@ -259,7 +262,8 @@ export class PlayerEntity extends me.Sprite {
         // set the display around our position
         me.game.viewport.follow(this, me.game.viewport.AXIS.BOTH);
 
-        this.doAccept = function(){            
+        this.AcceptDown = function(){   
+            game.acceptPressed = true;         
             if(game.currentInteractableNPC !== ""){  
                 const t = game.currentInteractableNPC.split("_");
                 if(t[0] === "TALK")  {        
@@ -277,8 +281,18 @@ export class PlayerEntity extends me.Sprite {
                 }
             }
         };
-        this.doDecline = function(){
-            this.body.setMaxVelocity(5, 5);
+        this.AcceptUp = function(){
+            game.acceptPressed = false;
+        };
+        this.DeclineDown = function(){
+            game.declinePressed = true;
+            if(!game.disallowMovement){
+                this.body.setMaxVelocity(5, 5);
+            }
+        };
+        this.DelineUp = function(){
+            game.declinePressed  = false;
+            this.body.setMaxVelocity(2.5, 2.5);
         };
         if(!isTouchDevice()){
         // enable keyboard       
@@ -290,19 +304,16 @@ export class PlayerEntity extends me.Sprite {
             me.input.bindKey(me.input.KEY.X, "decline",true);
             me.event.on(me.event.KEYDOWN, (action, keyCode, edge) => {
               if (action === "accept" && game.acceptPressed === false) {
-                  this.doAccept();
-                  game.acceptPressed = true;
+                  this.AcceptDown();                  
               }
               else if (action === "decline" && game.declinePressed  === false) {
-                  this.doDecline();
-                  game.declinePressed = true;
+                  this.DeclineDown();                  
               }
             });
             me.event.on(me.event.KEYUP,(action,keyCode) => {
-                if(action === "accept") game.acceptPressed = false;
+                if(action === "accept") this.AcceptUp();
                 else if(action === "decline"){
-                     game.declinePressed  = false;
-                     this.body.setMaxVelocity(2.5, 2.5);
+                     this.DelineUp();                     
                 }
             });
         }
