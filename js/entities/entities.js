@@ -224,6 +224,7 @@ export class PlayerEntity extends me.Sprite {
         this.doDecline = function(){
             this.body.setMaxVelocity(5, 5);
         };
+        if(!isTouchDevice()){
         // enable keyboard       
             me.input.bindKey(me.input.KEY.LEFT,  "left");
             me.input.bindKey(me.input.KEY.RIGHT, "right");
@@ -259,10 +260,12 @@ export class PlayerEntity extends me.Sprite {
         this.addAnimation("walk_down",[0,1,0,2],150);
         // set default one
         this.setCurrentAnimation("walk_down");
+        }
     }
 
     update(dt) {        
-        if(!game.disallowMovement){            
+        if(!game.disallowMovement){       
+            if(!isTouchDevice()){     
             if (me.input.isKeyPressed("left")) {
                 // update the entity velocity
                 this.body.force.x = -this.body.maxVel.x;
@@ -294,7 +297,8 @@ export class PlayerEntity extends me.Sprite {
                 this.body.force.y = 0;
             }
         }
-
+    }else {
+        
         let dir = new me.Vector2d(joystickOutput.x ,joystickOutput.y).normalize();
         //const angle = Math.atan2(dir.y,dir.x);
         this.body.force.x = dir.x * this.body.maxVel.x;
@@ -316,7 +320,7 @@ export class PlayerEntity extends me.Sprite {
                 }else if (!this.isCurrentAnimation("walk_down")) {
                     this.setCurrentAnimation("walk_down");
                 }
-
+            }
         //}
         //instead of having a public static playerreference which is fucking impossible for some reason
         //ill just upload the x and y coords to game instead
