@@ -27,12 +27,18 @@ let acceptButtonRect = acceptButton.getBoundingClientRect();
 const declineButton = document.getElementById('decline-button');
 let declineButtonRect = declineButton.getBoundingClientRect();
 
+// Track active touches for different controls
+let activeTouches = {
+    joystick: null,      // Track joystick touch
+    accept: null,        // Track accept button touch
+    decline: null        // Track decline button touch
+};
         
-let activeTouchId = null;
 if(isTouchDevice()){
-MobileScreenControlsContainer.style.display = 'block';   
+    MobileScreenControlsContainer.style.display = 'block';   
 }     
-    // Output values
+    
+// Output values
 let joystickOutput = {
     x: 0,
     y: 0,
@@ -82,6 +88,7 @@ function acceptButtonPress(TX,TY){
         }
     }
 }
+
 function declineButtonPress(TX,TY){
     if(TX >= declineButtonRect.left && TX < declineButtonRect.left + declineButtonRect.width){
         if(TY >= declineButtonRect.top && TY < declineButtonRect.top + declineButtonRect.height){   
@@ -93,82 +100,132 @@ function declineButtonPress(TX,TY){
         }
     }
 }
-        
-// Touch events
-MobileScreenControlsContainer.addEventListener('touchstart', (e) => {   
-    if (activeTouchId === null) {
-        const touch = e.touches[0];
-        activeTouchId = touch.identifier;
-        updateJoystickOutput(touch.clientX, touch.clientY);
-        e.preventDefault();
-    }
-},{passive : false});
-        
-MobileScreenControlsContainer.addEventListener('touchmove', (e) => {    
-    for (let i = 0; i < e.touches.length; i++) {
-        const touch = e.touches[i];
-        if (touch.identifier === activeTouchId) {
-            updateJoystickOutput(touch.clientX, touch.clientY);
-            e.preventDefault();
-            break;
-        }
-    }
-},{passive : false});
-        
-MobileScreenControlsContainer.addEventListener('touchend', (e) => {    
-    for (let i = 0; i < e.changedTouches.length; i++) {
-        const touch = e.changedTouches[i];
-        if (touch.identifier === activeTouchId) {
-            resetJoystick();
-            activeTouchId = null;
-            e.preventDefault();
-            break;
-        }
-    }
-},{passive : false});  
 
-acceptButton.addEventListener('touchstart', (e) => {
-    if(activeTouchId === null) {
-        const touch = e.touches[0];
-        activeTouchId = touch.identifier;
-        acceptButtonPress(touch.clientX, touch.clientY);
-        e.preventDefault();
+// Helper function to find which control area a touch is in
+function getControlForTouch(clientX, clientY) {
+    // Check joystick area with leeway
+    if (clientX >= joystickbaseRect.left-30 && clientX <= joystickbaseRect.right+30 &&
+        clientY >= joystickbaseRect.top-30 && clientY <= joystickbaseRect.bottom+30) {
+        return 'joystick';
     }
-},{passive:false});
-declineButton.addEventListener('touchstart', (e) => {
-    if(activeTouchId === null) {
-        const touch = e.touches[0];
-        activeTouchId = touch.identifier;
-        declineButtonPress(touch.clientX, touch.clientY);
-        e.preventDefault();
+    // Check accept button
+    if (clientX >= acceptButtonRect.left && clientX <= acceptButtonRect.right &&
+        clientY >= acceptButtonRect.top && clientY <= acceptButtonRect.bottom) {
+        return 'accept';
     }
-},{passive:false});
-acceptButton.addEventListener('touchend', (e) => {    
+    // Check decline button
+    if (clientX >= declineButtonRect.left && clientX <= declineButtonRect.right &&
+        clientY >= declineButtonRect.top && clientY <= declineButtonRect.bottom) {
+        return 'decline';
+    }
+    return null;
+}
+
+// Touch events for the entire container
+MobileScreenControlsContainer.addEventListener('touchstart', (e) => {   
+    e.preventDefault();
+    
     for (let i = 0; i < e.changedTouches.length; i++) {
         const touch = e.changedTouches[i];
-        if (touch.identifier === activeTouchId) {
-            game.acceptPressed = false;
-            acceptButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-            acceptButton.style.border = "2px solid rgba(255, 255, 255, 0.5)";            
-            activeTouchId = null;
-            e.preventDefault();
-            break;
+        const controlType = getControlForTouch(touch.clientX, touch.clientY);
+        
+        if (controlType && activeTouches[controlType] === null) {
+            activeTouches[controlType] = touch.identifier;
+            
+            switch(controlType) {
+                case 'joystick':
+                    updateJoystickOutput(touch.clientX, touch.clientY);
+                    break;
+                case 'accept':
+                    acceptButtonPress(touch.clientX, touch.clientY);
+                    break;
+                case 'decline':
+                    declineButtonPress(touch.clientX, touch.clientY);
+                    break;
+            }
         }
     }
-},{passive : false});  
-declineButton.addEventListener('touchend', (e) => {    
+}, {passive: false});
+
+MobileScreenControlsContainer.addEventListener('touchmove', (e) => {    
+    e.preventDefault();
+    
+    // Update joystick if we have an active joystick touch
+    if (activeTouches.joystick !== null) {
+        for (let i = 0; i < e.touches.length; i++) {
+            const touch = e.touches[i];
+            if (touch.identifier === activeTouches.joystick) {
+                updateJoystickOutput(touch.clientX, touch.clientY);
+                break;
+            }
+        }
+    }
+}, {passive: false});
+
+MobileScreenControlsContainer.addEventListener('touchend', (e) => {    
+    e.preventDefault();
+    
     for (let i = 0; i < e.changedTouches.length; i++) {
         const touch = e.changedTouches[i];
-        if (touch.identifier === activeTouchId) {
-            game.declinePressed = false;
-            declineButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-            declineButton.style.border = "2px solid rgba(255, 255, 255, 0.5)";   
-            activeTouchId = null;
-            e.preventDefault();
-            break;
+        
+        // Check which control this touch was associated with
+        for (const controlType in activeTouches) {
+            if (activeTouches[controlType] === touch.identifier) {
+                activeTouches[controlType] = null;
+                
+                switch(controlType) {
+                    case 'joystick':
+                        resetJoystick();
+                        break;
+                    case 'accept':
+                        game.acceptPressed = false;
+                        acceptButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+                        acceptButton.style.border = "2px solid rgba(255, 255, 255, 0.5)";
+                        break;
+                    case 'decline':
+                        game.declinePressed = false;
+                        declineButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+                        declineButton.style.border = "2px solid rgba(255, 255, 255, 0.5)";
+                        break;
+                }
+                break;
+            }
         }
     }
-},{passive : false});  
+}, {passive: false});
+
+// Also handle touchcancel for cases like system interrupts
+MobileScreenControlsContainer.addEventListener('touchcancel', (e) => {    
+    e.preventDefault();
+    
+    for (let i = 0; i < e.changedTouches.length; i++) {
+        const touch = e.changedTouches[i];
+        
+        for (const controlType in activeTouches) {
+            if (activeTouches[controlType] === touch.identifier) {
+                activeTouches[controlType] = null;
+                
+                switch(controlType) {
+                    case 'joystick':
+                        resetJoystick();
+                        break;
+                    case 'accept':
+                        game.acceptPressed = false;
+                        acceptButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+                        acceptButton.style.border = "2px solid rgba(255, 255, 255, 0.5)";
+                        break;
+                    case 'decline':
+                        game.declinePressed = false;
+                        declineButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+                        declineButton.style.border = "2px solid rgba(255, 255, 255, 0.5)";
+                        break;
+                }
+                break;
+            }
+        }
+    }
+}, {passive: false});
+
 DocBody.onresize = function(){
     console.log('Document has been resized');
     joystickbaseRect = joystickBase.getBoundingClientRect();
@@ -178,7 +235,6 @@ DocBody.onresize = function(){
     acceptButtonRect = acceptButton.getBoundingClientRect();
     declineButtonRect = declineButton.getBoundingClientRect();
 };
-
 // a player entity
 export class PlayerEntity extends me.Sprite {
 
