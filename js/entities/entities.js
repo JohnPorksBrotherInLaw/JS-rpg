@@ -249,7 +249,7 @@ export class PlayerEntity extends me.Sprite {
                      this.body.setMaxVelocity(2.5, 2.5);
                 }
             });
-        
+        }
         // define walking animations
         this.addAnimation("walk_left",[6,7,6,8],150);
 
@@ -260,7 +260,7 @@ export class PlayerEntity extends me.Sprite {
         this.addAnimation("walk_down",[0,1,0,2],150);
         // set default one
         this.setCurrentAnimation("walk_down");
-        }
+        
     }
 
     update(dt) {        
@@ -297,7 +297,7 @@ export class PlayerEntity extends me.Sprite {
                 this.body.force.y = 0;
             }
         }
-    }else {
+    else {
         
         let dir = new me.Vector2d(joystickOutput.x ,joystickOutput.y).normalize();
         //const angle = Math.atan2(dir.y,dir.x);
@@ -333,7 +333,7 @@ export class PlayerEntity extends me.Sprite {
             return true;
         }
     
-   
+    }
         
         
             
