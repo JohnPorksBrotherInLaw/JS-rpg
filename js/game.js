@@ -4,6 +4,7 @@ var game = {
     disallowMovement: false,
     acceptPressed:false,
     declinePressed:false,
+    playerRef : null,
     playerXCoord : 0,
     playerYCoord : 0,
     UITextureAtlas:null,

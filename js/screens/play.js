@@ -41,11 +41,11 @@ class PlayScreen extends me.Stage {
         // register on mouse event
         
        if(me.device.isMobile){
-            this.InitMobileControls();  
+            //this.InitMobileControls();  
             //we getting rid of the joystick. use the tap location to move in the direction
-            me.input.registerPointerEvent("pointermove", me.game.viewport, function (event) {
-                me.event.emit("pointermove", event);
-            }, false);
+           // me.input.registerPointerEvent("pointermove", me.game.viewport, function (event) {
+           //     me.event.emit("pointermove", event);
+          //  }, false);
        }
     };
 constructor(){

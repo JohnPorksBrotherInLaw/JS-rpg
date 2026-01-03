@@ -23,17 +23,17 @@ let joystickmaxDistance = joystickbaseRect.width / 3;
 
 const acceptButton = document.getElementById('accept-button');
 let acceptButtonRect = acceptButton.getBoundingClientRect();
-let acceptPressed = false;
+
 const declineButton = document.getElementById('decline-button');
 let declineButtonRect = declineButton.getBoundingClientRect();
-let declinePressed = false;
+
         
 let activeTouchId = null;
 if(isTouchDevice()){
 MobileScreenControlsContainer.style.display = 'block';   
 }     
     // Output values
-const joystickOutput = {
+let joystickOutput = {
     x: 0,
     y: 0,
     angle: 0,//used to determine what animation
@@ -74,8 +74,9 @@ function resetJoystick() {
 function acceptButtonPress(TX,TY){
     if(TX >= acceptButtonRect.left && TX < acceptButtonRect.left + acceptButtonRect.width){
         if(TY >= acceptButtonRect.top && TY < acceptButtonRect.top + acceptButtonRect.height){
-            
-            acceptPressed = true;
+            console.log("ok");
+            game.acceptPressed = true;
+            game.playerRef.doAccept();
             acceptButton.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
             acceptButton.style.border = "2px solid rgba(255, 255, 255, 0.8)";    
         }
@@ -83,8 +84,10 @@ function acceptButtonPress(TX,TY){
 }
 function declineButtonPress(TX,TY){
     if(TX >= declineButtonRect.left && TX < declineButtonRect.left + declineButtonRect.width){
-        if(TY >= declineButtonRect.top && TY < declineButtonRect.top + declineButtonRect.height){            
-            declinePressed = true;
+        if(TY >= declineButtonRect.top && TY < declineButtonRect.top + declineButtonRect.height){   
+            console.log("no good");         
+            game.declinePressed = true;
+            game.playerRef.doDecline();
             declineButton.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
             declineButton.style.border = "2px solid rgba(255, 255, 255, 0.8)";   
         }
@@ -144,7 +147,7 @@ acceptButton.addEventListener('touchend', (e) => {
     for (let i = 0; i < e.changedTouches.length; i++) {
         const touch = e.changedTouches[i];
         if (touch.identifier === activeTouchId) {
-            acceptPressed = false;
+            game.acceptPressed = false;
             acceptButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
             acceptButton.style.border = "2px solid rgba(255, 255, 255, 0.5)";            
             activeTouchId = null;
@@ -157,7 +160,7 @@ declineButton.addEventListener('touchend', (e) => {
     for (let i = 0; i < e.changedTouches.length; i++) {
         const touch = e.changedTouches[i];
         if (touch.identifier === activeTouchId) {
-            declinePressed = false;
+            game.declinePressed = false;
             declineButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
             declineButton.style.border = "2px solid rgba(255, 255, 255, 0.5)";   
             activeTouchId = null;
@@ -188,14 +191,15 @@ export class PlayerEntity extends me.Sprite {
                 frameheight: 42
             }, settings)
         );        
-
+        //set static reference to self
+        game.playerRef = this;
         // add a physic body with a rect as a body shape
         this.body = new me.Body(this, (new me.Rect(0, 30, 23, 12)));
         // walking & jumping speed
         this.body.setMaxVelocity(2.5, 2.5);
         this.body.setFriction(0.4,0.4);
         // subscribe to pointer move event
-        this.pointerEvent = me.event.on("pointermove", this.pointerMove, this);
+      // this.pointerEvent = me.event.on("pointermove", this.pointerMove, this);
         // set the display around our position
         me.game.viewport.follow(this, me.game.viewport.AXIS.BOTH);
 
@@ -291,6 +295,28 @@ export class PlayerEntity extends me.Sprite {
             }
         }
 
+        let dir = new me.Vector2d(joystickOutput.x ,joystickOutput.y).normalize();
+        //const angle = Math.atan2(dir.y,dir.x);
+        this.body.force.x = dir.x * this.body.maxVel.x;
+        this.body.force.y = dir.y * this.body.maxVel.y;
+                //pi * 0.25 = 0.78539816339744830961566084581988
+                //pi *0.75 = 2.3561944901923449288469825374596
+        if(joystickOutput.angle <= -2.357 || joystickOutput.angle > 2.357){
+                    if (!this.isCurrentAnimation("walk_left")) {
+                    this.setCurrentAnimation("walk_left");
+                    }
+                }else if(joystickOutput.angle<= -0.785){
+                    if (!this.isCurrentAnimation("walk_up")) {
+                    this.setCurrentAnimation("walk_up");
+                    }
+                }else if(joystickOutput.angle <= 0.785){
+                    if (!this.isCurrentAnimation("walk_right")) {
+                    this.setCurrentAnimation("walk_right");
+                    }
+                }else if (!this.isCurrentAnimation("walk_down")) {
+                    this.setCurrentAnimation("walk_down");
+                }
+
         //}
         //instead of having a public static playerreference which is fucking impossible for some reason
         //ill just upload the x and y coords to game instead
@@ -302,32 +328,12 @@ export class PlayerEntity extends me.Sprite {
             super.update(dt);
             return true;
         }
-    }
-    pointerMove(event) {
-        if(!game.disallowMovement){
-        let dir = new me.Vector2d(event.gameWorldX - this.pos.x,event.gameWorldY - this.pos.y).normalize();
-        const angle = Math.atan2(dir.y,dir.x);
-        this.body.force.x = dir.x * this.body.maxVel.x;
-        this.body.force.y = dir.y * this.body.maxVel.y;
-                //pi * 0.25 = 0.78539816339744830961566084581988
-                //pi *0.75 = 2.3561944901923449288469825374596
-        if(angle <= -2.357 || angle > 2.357){
-                    if (!this.isCurrentAnimation("walk_left")) {
-                    this.setCurrentAnimation("walk_left");
-                    }
-                }else if(angle<= -0.785){
-                    if (!this.isCurrentAnimation("walk_up")) {
-                    this.setCurrentAnimation("walk_up");
-                    }
-                }else if(angle <= 0.785){
-                    if (!this.isCurrentAnimation("walk_right")) {
-                    this.setCurrentAnimation("walk_right");
-                    }
-                }else if (!this.isCurrentAnimation("walk_down")) {
-                    this.setCurrentAnimation("walk_down");
-                }
-            }
-    }
+    
+   
+        
+        
+            
+        }
     /**
      * colision handler
      * (called when colliding with other objects)
@@ -379,7 +385,7 @@ export class Door extends me.Renderable{
         let newx = game.playerXCoord - this.pos.x;
         let newy = game.playerYCoord - this.pos.y;            
         if(Math.sqrt(newx * newx + newy * newy) < this.interactradius){   
-           // console.log(this.settings);            
+           //console.log(this.settings);            
             game.currentInteractableNPC = "DOOR_";
             game.currentDoor = this.settings;
         }else{
