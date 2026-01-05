@@ -11,7 +11,7 @@ export class UIContainer extends me.UIBaseElement {
         super(x, y, width, height);
 
         // [0, 0] as origin
-        this.anchorPoint.set(0, 0);
+        this.anchorPoint.set(0.5, 0.5);
 
         // give a name
         this.name = Name;
@@ -43,9 +43,8 @@ export class ButtonUI extends me.UISpriteElement {
         // offset of the two used images in the texture
         this.clickEvent = onclick;
         this.releaseEvent = onrelease;
-        this.anchorPoint.set(0, 0);
-        this.setOpacity(0.5);
-
+        this.anchorPoint.set(0.5, 0.5);
+        this.setOpacity(0.5);        
         this.font = new me.Text(0, 0 ,{
             font: "sansserif",
             size: 12,
@@ -77,7 +76,8 @@ export class ButtonUI extends me.UISpriteElement {
     /**
      * function called when the object is clicked on
      */
-    onClick() {
+    onClick(event) {
+        console.log("click!");
         this.clickEvent();
         return false;
     }
@@ -221,7 +221,23 @@ function findit(a,b,LENGTH){
             return b[i];
     }   
 }
+export class PauseMenu extends UIContainer{
+    constructor(){
+        super(50*game.vw,50*game.vh,70*game.vw,80*game.vh,game.UITextureAtlas,"whitebox",true,false,"PauseMenu");
+        this.addChild(new ButtonUI(50*game.vw,40*game.vh,"acceptbutton",() => {
+            console.log("click");
+            me.video.init(640,480, {parent : "screen", scale : "auto"});
 
+        }));
+        me.game.world.addChild(this, 16);
+    }
+    onResetEvent(){
+
+    }
+    onDeactivateEvent(){
+
+    }
+}
 //this needs to be a class so that i can reference the uielements directly.
 export class DialogueGUI extends UIContainer{
     constructor(){

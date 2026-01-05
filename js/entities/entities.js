@@ -3,13 +3,9 @@ import game from '../game.js';
 import * as GUI from './gui.js';
 //MOBILE CONTROLS FOR USE IN PLAYERENTITY
 //I THINK POINTER EVENTS INCLUDE TOUCHSCREEN NOW THAT I THINK ABT IT
-//I HAVE OTHER SHIT TO DO RN
+//whatever these work rn and idc 
 // Detect touch device and show controls if needed
-function isTouchDevice() {
-    return (('ontouchstart' in window) ||
-        navigator.maxTouchPoints > 0) ||
-        (navigator.msMaxTouchPoints > 0);
-}
+game.isTouchDevice = (('ontouchstart' in window) || navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
 
 //the joystick on the screen for mobile
 const DocBody = document.querySelector('body');
@@ -34,7 +30,7 @@ let activeTouches = {
     decline: null        // Track decline button touch
 };
         
-if(isTouchDevice()){
+if(game.isTouchDevice){
     MobileScreenControlsContainer.style.display = 'block';   
 }     
     
@@ -294,14 +290,15 @@ export class PlayerEntity extends me.Sprite {
             game.declinePressed  = false;
             this.body.setMaxVelocity(2.5, 2.5);
         };
-        if(!isTouchDevice()){
+        if(!game.isTouchDevice){
         // enable keyboard       
             me.input.bindKey(me.input.KEY.LEFT,  "left");
             me.input.bindKey(me.input.KEY.RIGHT, "right");
             me.input.bindKey(me.input.KEY.UP,    "up");
             me.input.bindKey(me.input.KEY.DOWN,  "down");
-            me.input.bindKey(me.input.KEY.Z, "accept",true);
-            me.input.bindKey(me.input.KEY.X, "decline",true);
+            me.input.bindKey(me.input.KEY.Z, "accept");
+            me.input.bindKey(me.input.KEY.X, "decline");
+            me.input.bindKey(me.input.KEY.ESC, "menu",true,true);
             me.event.on(me.event.KEYDOWN, (action, keyCode, edge) => {
               if (action === "accept" && game.acceptPressed === false) {
                   this.AcceptDown();                  
@@ -329,10 +326,30 @@ export class PlayerEntity extends me.Sprite {
         this.setCurrentAnimation("walk_down");
         
     }
-
-    update(dt) {        
-        if(!game.disallowMovement){       
-            if(!isTouchDevice()){     
+    ToggleMenu(){
+        if(game.paused){
+            //deload menu and resume playstate
+            console.log("closing menu");
+            game.paused = false;            
+            me.game.world.removeChild(game.PauseMenu);  
+            game.PauseMenu = null;
+        }else{
+            console.log("showing menu");
+            //pause playstate and load menu
+            game.paused = true;
+            //i can pass args here into onresetevent if i want put i dont need to     
+            game.PauseMenu = me.pool.pull("PauseMenu");
+            
+        }      
+    }
+    update(dt) {  
+        if(!game.isTouchDevice){   
+            if(me.input.isKeyPressed("menu")){
+                this.ToggleMenu();
+            }     
+            if(!game.paused){ 
+            if(!game.disallowMovement){       
+              
             if (me.input.isKeyPressed("left")) {
                 // update the entity velocity
                 this.body.force.x = -this.body.maxVel.x;
@@ -364,7 +381,7 @@ export class PlayerEntity extends me.Sprite {
                 this.body.force.y = 0;
             }
         }
-    else {
+        else {
         
         let dir = new me.Vector2d(joystickOutput.x ,joystickOutput.y).normalize();
         //const angle = Math.atan2(dir.y,dir.x);
@@ -388,6 +405,7 @@ export class PlayerEntity extends me.Sprite {
                     this.setCurrentAnimation("walk_down");
                 }
             }
+        }
         //}
         //instead of having a public static playerreference which is fucking impossible for some reason
         //ill just upload the x and y coords to game instead

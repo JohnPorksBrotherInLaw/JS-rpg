@@ -10,6 +10,15 @@
             "pivot": {"x":0,"y":0}
         },
         {
+            "filename": "bluebox",
+            "frame": {"x": 1, "y": 148,"w":334,"h":86},
+            "rotated": false,
+	        "trimmed": false,
+            "spriteSourceSize": {"x":0,"y":0,"w":334,"h":86},
+	        "sourceSize": {"w":334,"h":86},
+            "pivot": {"x":0,"y":0}
+        },
+        {
             "filename": "joystickbase",
             "frame": {"x": 336, "y": 1,"w":118,"h":118},
             "rotated": false,

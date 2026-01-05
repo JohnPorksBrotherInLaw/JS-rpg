@@ -2,7 +2,7 @@ import * as me from 'melonjs';
 import * as GUI from '../entities/gui.js';
 import * as Ent from '../entities/entities.js';
 import game from '../game.js';
-class PlayScreen extends me.Stage {
+export class PlayScreen extends me.Stage {
 
     //set constant values for things while the game is playing (under normal conditions)
       // action to perform on state change
@@ -41,14 +41,18 @@ class PlayScreen extends me.Stage {
         // register on mouse event
         
        if(me.device.isMobile){
+        game.hideMobileControls = false;
             //this.InitMobileControls();  
             //we getting rid of the joystick. use the tap location to move in the direction
            // me.input.registerPointerEvent("pointermove", me.game.viewport, function (event) {
            //     me.event.emit("pointermove", event);
           //  }, false);
        }
+
+       //load the story
+       game.CurChapter = me.loader.getJSON("Chapter1");
     };
-constructor(){
+/*constructor(){
     super();
     this.InitMobileControls = () =>{
         console.log("initializing mobile control layout");
@@ -72,7 +76,6 @@ constructor(){
         
         me.game.world.addChild(panel, 10);
    };
-  }
+  }*/
 };
 
-export default PlayScreen;

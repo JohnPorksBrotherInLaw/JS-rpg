@@ -1,0 +1,44 @@
+{
+    "scenes" : [
+        {
+            "sceneFormat" : "linear",
+            "frames": [
+                {"command" : "bkgclr black"},
+                {
+                    "spkr" : "andrew",
+                    "txt" : "this is just a test to see if my story board works."
+                },
+                {
+                    "txt" : "the background should be black and andrew should still be talking rn."
+                },
+                {
+                    "txt" : "ok now go see if u can talk to levi"
+                },
+                {"command":"bkgclr clear"}
+            ]
+        },
+        {
+            "sceneFormat" : "nonlinear",
+            "npcs":[
+                {
+                    "name" : "Levi",
+                    "posX" : 50,
+                    "posY" : 50,
+                    "curAnimFrame" : 4,
+                    "frames" : [
+                        {
+                            "spkr" : "levi",
+                            "graphic" : "default",
+                            "txt" : "hi andrew"
+                        },
+                        {
+                            "spkr" : "andrew",
+                            "graphic" :"default",
+                            "txt" : "wazzap biatch"
+                        }
+                    ]
+                }
+            ]
+        }        
+    ]
+}

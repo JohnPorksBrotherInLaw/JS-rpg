@@ -1,0 +1,10 @@
+each scene is a different change in gameplay
+Linear - frames read from first to last. play cannot move. plays like a visual novel. 
+    Linear scenes end automatically when the last frame is read
+NonLinear - frames are all generated at once and given to npcs. the player is free to roam around
+    and interact with the npcs in anyorder he chooses, each triggering their own linear frame sequence
+            NonLinear scenes must be ended using the endscene command called by some npc
+some frames are commands and do things in the game. commands execute code then automatically jumps to next frame
+    & - concat two commands in the same commandline separated by this character
+    bkgclr - change backgroundcolor
+    endscene - jumps to the next scene
