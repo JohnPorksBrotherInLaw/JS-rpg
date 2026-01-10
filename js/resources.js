@@ -23,6 +23,8 @@ var resources = [
       */
     //{ name: "testMap", type: "tmx", src: "data/map/testMap.tmx" },
     { name: "floor1", type: "tmx", src: "data/map/floor1.tmx" },
+    
+    {name:"Chapter1",type :"json",src:"data/story/chapter1.json"},
     /* Background music.
      * @example
      * { name: "example_bgm", type: "audio", src: "data/bgm/" },

@@ -35,6 +35,13 @@ export default function onload() {
         me.pool.register("DialogueScreen",GUI.DialogueGUI,true);
         me.pool.register("DialogueCharacter",me.Sprite);
 
+        game.playerTalkingSpriteAtlas = new me.TextureAtlas(
+            me.loader.getJSON("playerTalkingSpriteJson")
+        );
+        /*me.pool.register("andrew",GUI.Andrew);
+        me.pool.register("levi",GUI.Levi);
+        me.pool.register("maria",GUI.Maria);
+*/
         //pool pause menu
         me.pool.register("PauseMenu",GUI.PauseMenu);
 

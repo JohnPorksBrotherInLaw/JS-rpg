@@ -2,20 +2,20 @@
     "frames" : [
         {
             "filename": "whitebox",
-            "frame": {"x": 1, "y": 1,"w":334,"h":86},
+            "frame": {"x": 1, "y": 1,"w":336,"h":86},
             "rotated": false,
 	        "trimmed": false,
-            "spriteSourceSize": {"x":0,"y":0,"w":334,"h":86},
-	        "sourceSize": {"w":334,"h":86},
+            "spriteSourceSize": {"x":0,"y":0,"w":336,"h":86},
+	        "sourceSize": {"w":336,"h":86},
             "pivot": {"x":0,"y":0}
         },
         {
             "filename": "bluebox",
-            "frame": {"x": 1, "y": 148,"w":334,"h":86},
+            "frame": {"x": 1, "y": 148,"w":336,"h":86},
             "rotated": false,
 	        "trimmed": false,
-            "spriteSourceSize": {"x":0,"y":0,"w":334,"h":86},
-	        "sourceSize": {"w":334,"h":86},
+            "spriteSourceSize": {"x":0,"y":0,"w":336,"h":86},
+	        "sourceSize": {"w":336,"h":86},
             "pivot": {"x":0,"y":0}
         },
         {
@@ -61,6 +61,24 @@
 	        "trimmed": false,
             "spriteSourceSize": {"x":0,"y":0,"w":8,"h":8},
 	        "sourceSize": {"w":8,"h":8},
+            "pivot": {"x":0,"y":0}
+        },
+        {
+            "filename": "purewhite",
+            "frame": {"x": 492, "y": 5,"w":4,"h":4},
+            "rotated": false,
+	        "trimmed": false,
+            "spriteSourceSize": {"x":0,"y":0,"w":4,"h":4},
+	        "sourceSize": {"w":4,"h":4},
+            "pivot": {"x":0,"y":0}
+        },
+        {
+            "filename": "pureblack",
+            "frame": {"x": 491, "y": 15,"w":6,"h":6},
+            "rotated": false,
+	        "trimmed": false,
+            "spriteSourceSize": {"x":0,"y":0,"w":6,"h":6},
+	        "sourceSize": {"w":6,"h":6},
             "pivot": {"x":0,"y":0}
         }
     ],

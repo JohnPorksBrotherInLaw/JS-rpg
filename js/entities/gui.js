@@ -238,9 +238,30 @@ export class PauseMenu extends UIContainer{
 
     }
 }
+//classes delegated to dialogue character talkingsprite sheets so that i can pool them
+/*
+export class Andrew extends me.Sprite{
+    constructor(x,y,settings){
+        super(x,y,settings);
+        this.image = "playerTalkingSprite";
+    }    
+}
+export class Levi extends me.Sprite{
+    constructor(x,y,settings){
+        super(x,y,settings);
+        this.image = "levitalkingsprite";
+    }    
+}
+export class Maria extends me.Sprite{
+    constructor(x,y,settings){
+        super(x,y,settings);
+        this.image = "mariatalkingsprite";
+    }    
+}
+*/
 //this needs to be a class so that i can reference the uielements directly.
 export class DialogueGUI extends UIContainer{
-    constructor(){
+    constructor(sequence){
         super(0,0,1,1,game.UITextureAtlas,"transparent",false,false,"DialogueScreen");        
         this.currentDialogueFrame = 0;
         this.currentDialogueSequence = null;
@@ -250,20 +271,35 @@ export class DialogueGUI extends UIContainer{
         this.rchar = null;
         this.lchar = null;
         this.namepanel = null;
+        this.backgroundpanel = null;
         this.Text = null;
         this.textbkg = null;
-        this.Init();
+        this.Init(sequence);
     }
-    Init(){
+    //find the atlas in game based off of string input
+    FindAtlas(input){
+        switch(input){
+            default:
+                return game.playerTalkingSpriteAtlas;
+        }
+    }
+    Init(FrameSequence){
         console.log("showing dialogue box");
         game.disallowMovement = true;
-        //get the json that the textbox is referencing and obtain the text
-        this.currentDialogueSequence = me.loader.getJSON(game.currentInteractableNPC);
+       
+        this.currentDialogueSequence = FrameSequence;
         this.currentDialogueFrame = 0;
         this.lastTS = "";
         this.nextchar = false;
-        //get all associated data
 
+
+        //i think i can honestly afford to store all talking sprites in ram and use them as i please.
+        //its kinda a waste but each talkingsprite should only use 4-5Mb of ram totaling across all characters to about 75Mb of ram wasted
+        //rn the game runs at 37ishMb which is nothing. i can afford to up the anty here i believe
+        //if not, create some talkingsprite buffer that scans ahead in the scene but im way too lazy to do althat
+
+        //get all associated data
+/*
         this.talkingSpriteAtlases = []; //talking sprite atlases
         for (let i = 0; i < this.currentDialogueSequence.talkingSpriteJsons.length; i++){
             this.talkingSpriteAtlases.push(new me.TextureAtlas(
@@ -271,55 +307,97 @@ export class DialogueGUI extends UIContainer{
                 me.loader.getJSON(this.currentDialogueSequence.talkingSpriteJsons[i])
             ));
         }
+*/
+        //theres usually commands spammed at the start of the scene, so do all of those if they exist, then continue.
+        for (let i= 0; i < this.currentDialogueSequence.length; i++) {
+            const element = this.currentDialogueSequence[i];
+            if(element.c !== undefined){
+                //do the command
+                this.DoCommand(element.c);
+                this.currentDialogueFrame++;
+            }else{
+                //its not a command so actually do the thing
+                break;
+            }
+        }
 
-        // t means text, ts means talking sprite, r means region
+        //random fail check if fsfr the scene is all commands 
+        if(this.currentDialogueSequence.length === this.currentDialogueFrame){
+            console.log("FAILSAFE REACHED! Destroying DialogueScreen");
+            game.disallowMovement = false;           
+            me.game.world.removeChild(game.DialogueGUI);         
+        }
+
+        // t means text, s means talking sprite, r means region
         //empty holder object
         //this.panel = new UIContainer(0,0,1,1,game.UITextureAtlas,"transparent");
         //the right character
-        this.rchar = this.addChild(me.pool.pull("DialogueCharacter",vw*80,vh*70,{
-            image : findit(this.currentDialogueSequence.dialogue[this.currentDialogueFrame],this.talkingSpriteAtlases,this.talkingSpriteAtlases.length),
-            region : this.currentDialogueSequence.dialogue[0].r,
+       /* if(this.backgroundpanel === null){//it may be created before during a command
+        this.backgroundpanel = this.addChild(new me.Sprite(0,0,{
+            image:game.UITextureAtlas,
+            region:"transparent",
+            name: "bkgpanel",
+            width: 100*vw,
+            height:100*vh
+        }));
+        }*/
+        const f = this.currentDialogueSequence[this.currentDialogueFrame];//f for frame
+        //console.log(f);
+        this.rchar = this.addChild(me.pool.pull("DialogueCharacter",vw*80,vh*100,{
+           //image is set in the pooled class. only need to set region
+            // image : findit(this.currentDialogueSequence[this.currentDialogueFrame],this.talkingSpriteAtlases,this.talkingSpriteAtlases.length),
+            image : this.FindAtlas(f.s),
+            region : f.r,
             name : "rchar",
             anchorPoint : new me.Vector2d(0.5,1)
         }));
+       // console.log(this.rchar);
         this.lchar = null;
         //textbox
-        this.textbkg = this.addChild(new UIContainer(vw*5, vh*70, vw*90, vh*30,game.UITextureAtlas,"whitebox"));
+        this.textbkg = this.addChild(new UIContainer(vw*50, vh*82, vw*90, vh*33,game.UITextureAtlas,"bluebox"));
         //charcter name sprite
         
-        this.namepanel = this.addChild(new me.Sprite(vw*7,vh*52,{
-            image : game.DialogueNamesTextureAtlas,
-            region : this.currentDialogueSequence.dialogue[0].ts,
-            name: "name",
-            anchorPoint : new me.Vector2d(0,1)
-        }));
-        this.Text = this.addChild(new me.Text(vw*6.5,vh*73,{
+       // this.namepanel = this.addChild(new me.Sprite(vw*7,vh*52,{
+       //     image : game.DialogueNamesTextureAtlas,
+       //     region : this.currentDialogueSequence.dialogue[0].ts,
+       //     name: "name",
+       //     anchorPoint : new me.Vector2d(0,1)
+        //}));
+        this.namepanel = this.addChild(new me.Text(vw*7,vh*59,{
             font:"sansserif",
-            size: 18,
-            fillStyle: "black",
+            size: 32,
+            fillStyle: "yellow",
             textAlign: "left",
             textBaseline: "top",
-            text: this.currentDialogueSequence.dialogue[0].t
+            text: f.s
         }));
-        this.lastTS = this.currentDialogueSequence.dialogue[0].ts;
+        this.Text = this.addChild(new me.Text(vw*7,vh*69,{
+            font:"sansserif",
+            size: 18,
+            fillStyle: "yellow",
+            textAlign: "left",
+            textBaseline: "top",
+            text: f.t
+        }));
+        this.lastTS = f.s;
         // add the panel to world (root) container
         me.game.world.addChild(this, 16);
     }
     Advance(){
         this.currentDialogueFrame++;
-        if(this.currentDialogueSequence.dialogue.length === this.currentDialogueFrame){
+        if(this.currentDialogueSequence.length === this.currentDialogueFrame){
             console.log("Destroying DialogueScreen");
             game.disallowMovement = false;           
             me.game.world.removeChild(game.DialogueGUI);                            
         } else{
-            const f = this.currentDialogueSequence.dialogue[this.currentDialogueFrame];//f for frame
+            const f = this.currentDialogueSequence[this.currentDialogueFrame];//f for frame
             //console.log(f);
             
             this.Text.setText(f.t);            
             //check which ts is on the frame. if neither dialoguecharacter is has that ts,
             //then replace the previously used dc with the new one and alter the name from there
-            if(f.ts !== undefined){//you can leave ts as undefined if the same character talks twice in a row
-                if(this.lastTS !== f.ts){
+            if(f.s !== undefined){//you can leave ts as undefined if the same character talks twice in a row
+                if(this.lastTS !== f.s){
                     if(this.lchar === null){
                 //      console.log("amet");
                         this.lchar = this.addChild(me.pool.pull("DialogueCharacter",vw*20,vh*70,{
@@ -331,23 +409,23 @@ export class DialogueGUI extends UIContainer{
                         this.nextchar = true; 
                     // this.panel.moveToBottom(this.panel.getChildByName("lchar"));
                         //console.log(this.namepanel);
-                        this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.ts));
-                    } else if(this.rchar.source.activeAtlas === f.ts){
+                        this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.s));
+                    } else if(this.rchar.source.activeAtlas === f.s){
                 //  console.log("lorem");
                         this.rchar.region = f.r;//edit their stance
                         this.nextchar = false;//set the opposite char to be the one to be swapped if necessary
-                        if(this.lastTS !== f.ts){
+                        if(this.lastTS !== f.s){
                             //update name if itsn different than last time                   
-                            this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.ts)); 
+                            this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.s)); 
                         }
                     //  console.log(this.rchar);
-                    } else if(this.lchar.source.activeAtlas === f.ts)  {
+                    } else if(this.lchar.source.activeAtlas === f.s)  {
                 //   console.log("ipsum");
                         this.lchar.region = f.r;
                         this.nextchar = true;
-                        if(this.lastTS !== f.ts){
+                        if(this.lastTS !== f.s){
                             //update name if its different than last time                   
-                            this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.ts));
+                            this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.s));
                         }
                     }  else {
                         //edit previous unused ts. similar to cookie run kingdom
@@ -376,11 +454,41 @@ export class DialogueGUI extends UIContainer{
                             this.nextchar = true;                   
                         }                
                         //update name if itsn different than last time
-                        this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.ts));                
+                        this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.s));                
                     }
                 }
             }
-            this.lastTS = f.ts;
+            this.lastTS = f.s;
+        }
+    }
+    DoCommand(command){
+        const args = command.split(" ");
+        switch(args[0]){
+            case "bkgclr":
+                //modify backgroundpanel
+                if(this.backgroundpanel !== null){
+                    //detroy it and recreate cz bs with images in this fucakss engine idk why
+                    this.removeChild(this.backgroundpanel);
+                    
+                    console.log(this.backgroundpanel);
+                }
+                switch(args[1]){
+                    case "black":
+                        this.backgroundpanel = this.addChild(new UIContainer(50*vw,50*vh,vw*100,vh*100,game.UITextureAtlas,"pureblack"));
+                        break;
+                    case "white":
+                     this.backgroundpanel = this.addChild(new UIContainer(50*vw,50*vh,vw*100,vh*100,game.UITextureAtlas,"purewhite"));
+                        break;
+                    case "clear":                    
+                        break;
+                    default:
+                        console.error("Command input is unrecognized. Did you spell it correctly? (It's case sensitive!)")
+                        break;
+                }                
+                break;
+            default:
+                console.error("Command input is unrecognized. Did you spell it correctly? (It's case sensitive!)")
+                break;
         }
     }
     onResetEvent(){

@@ -4,7 +4,12 @@ Linear - frames read from first to last. play cannot move. plays like a visual n
 NonLinear - frames are all generated at once and given to npcs. the player is free to roam around
     and interact with the npcs in anyorder he chooses, each triggering their own linear frame sequence
             NonLinear scenes must be ended using the endscene command called by some npc
-some frames are commands and do things in the game. commands execute code then automatically jumps to next frame
-    & - concat two commands in the same commandline separated by this character
+                curAnimFrame is to set the direction of the npc. by default npcs are unanimated.
+names for things in frames are contracted to one letter for ease when writing lots of them. their meanings:
+    c - command
+    r - name of region used to render the speaker on their talkingsprite.
+    s - name of speaker of the text. 
+    t - the text contained in the frame. 
+some frames are commands and do things in the game. commands execute code then automatically jumps to next frame 
     bkgclr - change backgroundcolor
     endscene - jumps to the next scene

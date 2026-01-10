@@ -10,12 +10,12 @@ var game = {
     playerYCoord : 0,
     UITextureAtlas:null,
     DialogueNamesTextureAtlas:null,
-    paused:false,
-    PauseMenu:null,
+    paused:false,//is pause menu showing?
+    PauseMenu:null,//ref to pase menu
     DialogueGUI:null,//ref to the dialogue on screen    
     currentInteractableNPC:"",//the name of the JSON that will be activated on accept
     currentDoor:null,
     hideMobileControls:false,
-    CurChapter:null,
+    playerTalkingSpriteAtlas:null,
 }
 export default game;

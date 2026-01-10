@@ -48,9 +48,11 @@ export class PlayScreen extends me.Stage {
            //     me.event.emit("pointermove", event);
           //  }, false);
        }
-
+       //pool all talking sprites into memory (wasteful?)
+       
        //load the story
        game.CurChapter = me.loader.getJSON("Chapter1");
+       me.pool.pull("DialogueScreen",game.CurChapter.scenes[0].frames);
     };
 /*constructor(){
     super();

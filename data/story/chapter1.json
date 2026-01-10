@@ -3,18 +3,19 @@
         {
             "sceneFormat" : "linear",
             "frames": [
-                {"command" : "bkgclr black"},
+                {"c" : "bkgclr black"},
                 {
-                    "spkr" : "andrew",
-                    "txt" : "this is just a test to see if my story board works."
+                    "s" : "player",
+                    "r" : "clear",
+                    "t" : "this is just a test to see if my story board works."
                 },
                 {
-                    "txt" : "the background should be black and andrew should still be talking rn."
+                    "t" : "the background should be black and andrew should still be talking rn."
                 },
                 {
-                    "txt" : "ok now go see if u can talk to levi"
+                    "t" : "ok now go see if u can talk to levi"
                 },
-                {"command":"bkgclr clear"}
+                {"c":"bkgclr clear"}
             ]
         },
         {
@@ -27,14 +28,14 @@
                     "curAnimFrame" : 4,
                     "frames" : [
                         {
-                            "spkr" : "levi",
-                            "graphic" : "default",
-                            "txt" : "hi andrew"
+                            "s" : "levi",
+                            "r" : "default",
+                            "t" : "hi andrew"
                         },
                         {
-                            "spkr" : "andrew",
-                            "graphic" :"default",
-                            "txt" : "wazzap biatch"
+                            "s" : "player",
+                            "r" :"default",
+                            "t" : "wazzap biatch"
                         }
                     ]
                 }
