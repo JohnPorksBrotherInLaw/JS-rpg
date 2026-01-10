@@ -283,6 +283,17 @@ export class DialogueGUI extends UIContainer{
                 return game.playerTalkingSpriteAtlas;
         }
     }
+    //get more correct names
+    GetName(input){
+        switch(input){
+            case "player":
+                return "Andrew Wozniak";
+            case "levi":
+                return "Levi Cooper";
+            default:
+                return "ERROR";
+        }
+    }
     Init(FrameSequence){
         console.log("showing dialogue box");
         game.disallowMovement = true;
@@ -365,15 +376,15 @@ export class DialogueGUI extends UIContainer{
         //}));
         this.namepanel = this.addChild(new me.Text(vw*7,vh*59,{
             font:"sansserif",
-            size: 32,
+            size: 36,
             fillStyle: "yellow",
             textAlign: "left",
             textBaseline: "top",
-            text: f.s
+            text: this.GetName(f.s)
         }));
         this.Text = this.addChild(new me.Text(vw*7,vh*69,{
             font:"sansserif",
-            size: 18,
+            size: 20,
             fillStyle: "yellow",
             textAlign: "left",
             textBaseline: "top",
@@ -382,8 +393,10 @@ export class DialogueGUI extends UIContainer{
         this.lastTS = f.s;
         // add the panel to world (root) container
         me.game.world.addChild(this, 16);
+        game.DialogueGUI = this;
     }
     Advance(){
+        console.log("next");
         this.currentDialogueFrame++;
         if(this.currentDialogueSequence.length === this.currentDialogueFrame){
             console.log("Destroying DialogueScreen");
@@ -392,7 +405,12 @@ export class DialogueGUI extends UIContainer{
         } else{
             const f = this.currentDialogueSequence[this.currentDialogueFrame];//f for frame
             //console.log(f);
-            
+            if(f.c !== undefined){
+                //do a command
+                this.DoCommand(f.c);
+                this.Advance();
+                return;
+            }else{
             this.Text.setText(f.t);            
             //check which ts is on the frame. if neither dialoguecharacter is has that ts,
             //then replace the previously used dc with the new one and alter the name from there
@@ -409,14 +427,14 @@ export class DialogueGUI extends UIContainer{
                         this.nextchar = true; 
                     // this.panel.moveToBottom(this.panel.getChildByName("lchar"));
                         //console.log(this.namepanel);
-                        this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.s));
+                      this.namepanel.setText(this.GetName(f.s));    
                     } else if(this.rchar.source.activeAtlas === f.s){
                 //  console.log("lorem");
                         this.rchar.region = f.r;//edit their stance
                         this.nextchar = false;//set the opposite char to be the one to be swapped if necessary
                         if(this.lastTS !== f.s){
                             //update name if itsn different than last time                   
-                            this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.s)); 
+                          this.namepanel.setText(this.GetName(f.s));    
                         }
                     //  console.log(this.rchar);
                     } else if(this.lchar.source.activeAtlas === f.s)  {
@@ -425,7 +443,7 @@ export class DialogueGUI extends UIContainer{
                         this.nextchar = true;
                         if(this.lastTS !== f.s){
                             //update name if its different than last time                   
-                            this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.s));
+                            this.namepanel.setText(this.GetName(f.s));    
                         }
                     }  else {
                         //edit previous unused ts. similar to cookie run kingdom
@@ -454,11 +472,12 @@ export class DialogueGUI extends UIContainer{
                             this.nextchar = true;                   
                         }                
                         //update name if itsn different than last time
-                        this.namepanel.setRegion(game.DialogueNamesTextureAtlas.getRegion(f.s));                
+                        this.namepanel.setText(this.GetName(f.s));             
                     }
                 }
             }
             this.lastTS = f.s;
+        }
         }
     }
     DoCommand(command){
@@ -470,7 +489,7 @@ export class DialogueGUI extends UIContainer{
                     //detroy it and recreate cz bs with images in this fucakss engine idk why
                     this.removeChild(this.backgroundpanel);
                     
-                    console.log(this.backgroundpanel);
+                   // console.log(this.backgroundpanel);
                 }
                 switch(args[1]){
                     case "black":
@@ -495,7 +514,8 @@ export class DialogueGUI extends UIContainer{
         this.Init();
     }
     onDeactivateEvent(){
-        this.removeChild(this.lchar);
+        if(this.lchar !== null)
+            this.removeChild(this.lchar);
         this.removeChild(this.namepanel);
         game.DialogueGUI = null;
         //console.log(game);

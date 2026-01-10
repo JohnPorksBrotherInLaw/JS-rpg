@@ -259,18 +259,25 @@ export class PlayerEntity extends me.Sprite {
         me.game.viewport.follow(this, me.game.viewport.AXIS.BOTH);
 
         this.AcceptDown = function(){   
-            game.acceptPressed = true;         
-            if(game.currentInteractableNPC !== ""){  
-                const t = game.currentInteractableNPC.split("_");
-                if(t[0] === "TALK")  {        
+            game.acceptPressed = true;     
+            /*if(t[0] === "TALK")  {        
                     if(game.DialogueGUI === null){                   
                         game.DialogueGUI = me.pool.pull("DialogueScreen");
                     // console.log("nimue");
                     }else{
                 //       console.log(game.DialogueGUI);
                         game.DialogueGUI.Advance();
-                    }
-                }else if (t[0]=== "DOOR") {
+                    }*/
+            if(game.DialogueGUI !== null)  {
+                //there is a dialogue showing. interact with it       
+                game.DialogueGUI.Advance();
+                return;
+            }    
+            if(game.currentInteractableNPC !== ""){  
+               
+                const t = game.currentInteractableNPC.split("_");
+                 if(t.length > 0){
+                }if (t[0]=== "DOOR") {
                     //console.log(game.currentDoor);
                     this.pos.x = game.currentDoor.exitXCoord;
                     this.pos.y = game.currentDoor.exitYCoord;
