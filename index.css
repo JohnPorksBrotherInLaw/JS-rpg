@@ -71,7 +71,7 @@ body {
   touch-action: none;
   z-index: 100;
 }
-        
+
 #joystick-base {
   position: absolute;
   width: 100%;
