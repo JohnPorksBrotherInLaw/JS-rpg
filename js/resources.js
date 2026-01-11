@@ -14,8 +14,6 @@ var resources = [
 
     {name:"UIAtlasImg", type:"image", src: "data/img/UIAtlas.png"},
     {name:'UIAtlasJson',type:'json',src:'data/img/UIAtlas.json'},
-    {name:"DialogueNames", type:"image", src: "data/img/DialogueNames.png"},
-    {name:'DialogueNamesJson',type:'json',src:'data/img/DialogueNames.json'},
     /* Maps.
      * @example
      * { name: "example01", type: "tmx", src: "data/map/example01.tmx" },
@@ -42,13 +40,6 @@ var resources = [
      * @example
      *{ name: "example_tps", type: "json", src: "data/img/example_tps.json" },
      */
-    { name: "npc0",  type:"image", src: "data/img/npc0.png" },
-    {name:"testMap-npc0",type:"json", src:"data/npc/testMap-npc0.json"},
-     {name:"npc0TalkingSprite", type : "image", src : "data/img/npc0TalkingSprite.png"},
-    {name:'npc0TalkingSpriteJson',type:'json',src:'data/img/npc0TalkingSprite.json'},
-
-
-
 ];
 
 export default resources;

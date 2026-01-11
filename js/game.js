@@ -12,7 +12,9 @@ var game = {
     DialogueNamesTextureAtlas:null,
     paused:false,//is pause menu showing?
     PauseMenu:null,//ref to pase menu
-    DialogueGUI:null,//ref to the dialogue on screen    
+    DialogueGUI:null,//ref to the dialogue on screen   
+    CurChapter:null,//ref to the current chapter scenes (to save on writing all the time)
+    CurScene:0,//current scene of the chapter
     currentInteractableNPC:"",//the name of the JSON that will be activated on accept
     currentDoor:null,
     hideMobileControls:false,

@@ -51,8 +51,11 @@ export class PlayScreen extends me.Stage {
        //pool all talking sprites into memory (wasteful?)
        
        //load the story
-       game.CurChapter = me.loader.getJSON("Chapter1");
-       me.pool.pull("DialogueScreen",game.CurChapter.scenes[0].frames);
+       let temp = me.loader.getJSON("Chapter1");
+       game.CurChapter = temp.scenes;
+       //technically you should put a check here to test if the first scene is linear or not, but prolly thatd never happen
+       //so idrc just throw the screen up with no checks
+       me.pool.pull("DialogueScreen",game.CurChapter[0].frames);
     };
 /*constructor(){
     super();

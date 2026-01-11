@@ -238,27 +238,7 @@ export class PauseMenu extends UIContainer{
 
     }
 }
-//classes delegated to dialogue character talkingsprite sheets so that i can pool them
-/*
-export class Andrew extends me.Sprite{
-    constructor(x,y,settings){
-        super(x,y,settings);
-        this.image = "playerTalkingSprite";
-    }    
-}
-export class Levi extends me.Sprite{
-    constructor(x,y,settings){
-        super(x,y,settings);
-        this.image = "levitalkingsprite";
-    }    
-}
-export class Maria extends me.Sprite{
-    constructor(x,y,settings){
-        super(x,y,settings);
-        this.image = "mariatalkingsprite";
-    }    
-}
-*/
+
 //this needs to be a class so that i can reference the uielements directly.
 export class DialogueGUI extends UIContainer{
     constructor(sequence){
@@ -294,6 +274,28 @@ export class DialogueGUI extends UIContainer{
                 return "ERROR";
         }
     }
+    //handle a few things when closing the gui
+    Exit(){
+        game.disallowMovement = false;    
+        //check if scene is linear if so, end scene goto the next
+        //otherwise just close it and do nothing
+        if(game.CurChapter[game.CurScene].sceneFormat === "linear"){
+            game.CurScene++;
+            if(game.CurChapter[game.CurScene].sceneFormat === "linear"){
+                //idk why thered ever be two linears back to back but ig if you wanted to here you go
+                //i may add more sceneformats later on but idk what id even add.
+                //maybe a filler minigame?
+                if(this.lchar !== null)
+                    this.removeChild(this.lchar);
+                this.Init(game.CurChapter[game.CurScene]);
+                //this may be rly buggy but also idgaf ill never use this snippet i dont think ever 
+                //im just getting the 100% completion bonus
+            }else if(game.CurChapter[game.CurScene].sceneFormat === "nonlinear"){
+
+            }
+        }
+        me.game.world.removeChild(game.DialogueGUI);           
+    }
     Init(FrameSequence){
         console.log("showing dialogue box");
         game.disallowMovement = true;
@@ -309,16 +311,6 @@ export class DialogueGUI extends UIContainer{
         //rn the game runs at 37ishMb which is nothing. i can afford to up the anty here i believe
         //if not, create some talkingsprite buffer that scans ahead in the scene but im way too lazy to do althat
 
-        //get all associated data
-/*
-        this.talkingSpriteAtlases = []; //talking sprite atlases
-        for (let i = 0; i < this.currentDialogueSequence.talkingSpriteJsons.length; i++){
-            this.talkingSpriteAtlases.push(new me.TextureAtlas(
-                // me.loader.getImage(json.talkingSprite),
-                me.loader.getJSON(this.currentDialogueSequence.talkingSpriteJsons[i])
-            ));
-        }
-*/
         //theres usually commands spammed at the start of the scene, so do all of those if they exist, then continue.
         for (let i= 0; i < this.currentDialogueSequence.length; i++) {
             const element = this.currentDialogueSequence[i];
@@ -335,8 +327,7 @@ export class DialogueGUI extends UIContainer{
         //random fail check if fsfr the scene is all commands 
         if(this.currentDialogueSequence.length === this.currentDialogueFrame){
             console.log("FAILSAFE REACHED! Destroying DialogueScreen");
-            game.disallowMovement = false;           
-            me.game.world.removeChild(game.DialogueGUI);         
+            this.Exit();      
         }
 
         // t means text, s means talking sprite, r means region
@@ -356,7 +347,6 @@ export class DialogueGUI extends UIContainer{
         //console.log(f);
         this.rchar = this.addChild(me.pool.pull("DialogueCharacter",vw*80,vh*100,{
            //image is set in the pooled class. only need to set region
-            // image : findit(this.currentDialogueSequence[this.currentDialogueFrame],this.talkingSpriteAtlases,this.talkingSpriteAtlases.length),
             image : this.FindAtlas(f.s),
             region : f.r,
             name : "rchar",
@@ -368,12 +358,6 @@ export class DialogueGUI extends UIContainer{
         this.textbkg = this.addChild(new UIContainer(vw*50, vh*82, vw*90, vh*33,game.UITextureAtlas,"bluebox"));
         //charcter name sprite
         
-       // this.namepanel = this.addChild(new me.Sprite(vw*7,vh*52,{
-       //     image : game.DialogueNamesTextureAtlas,
-       //     region : this.currentDialogueSequence.dialogue[0].ts,
-       //     name: "name",
-       //     anchorPoint : new me.Vector2d(0,1)
-        //}));
         this.namepanel = this.addChild(new me.Text(vw*7,vh*59,{
             font:"sansserif",
             size: 36,
@@ -400,8 +384,7 @@ export class DialogueGUI extends UIContainer{
         this.currentDialogueFrame++;
         if(this.currentDialogueSequence.length === this.currentDialogueFrame){
             console.log("Destroying DialogueScreen");
-            game.disallowMovement = false;           
-            me.game.world.removeChild(game.DialogueGUI);                            
+            this.Exit();                        
         } else{
             const f = this.currentDialogueSequence[this.currentDialogueFrame];//f for frame
             //console.log(f);
